@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>롤체토스 - 메인 페이지 와이어프레임</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #0f1118; color: #c0c4cc; }
+
+  /* Header */
+  .header-bg { background: #161923; border-bottom: 1px solid #2a2d3a; }
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; max-width: 1100px; margin: 0 auto; }
+  .logo { font-size: 20px; font-weight: 700; color: #5a73c8; }
+  .nav { display: flex; gap: 24px; }
+  .nav a { color: #c0c4cc; text-decoration: none; font-size: 14px; }
+  .nav a:hover, .nav a.active { color: #e0e0e0; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .header-search { display: flex; align-items: center; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 0 12px; gap: 8px; }
+  .header-search .region { color: #555; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .header-search .sep { color: #333; flex-shrink: 0; }
+  .header-search input { padding: 7px 0; background: transparent; border: none; color: #c0c4cc; font-size: 13px; width: 200px; outline: none; }
+  .header-search input::placeholder { color: #555; }
+  .header-search .search-icon { color: #555; font-size: 22px; flex-shrink: 0; cursor: pointer; background: none; border: none; transform: scaleX(-1); }
+  .lang-select { background: #1e2130; border: 1px solid #2a2d3a; color: #c0c4cc; padding: 6px 12px; border-radius: 6px; font-size: 13px; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 48px 24px 32px; background: linear-gradient(180deg, #161923 0%, #0f1118 100%); }
+  .hero h1 { font-size: 28px; margin-bottom: 8px; color: #e0e0e0; }
+  .hero p { color: #888; font-size: 14px; margin-bottom: 24px; }
+  .search-bar { display: flex; align-items: center; max-width: 520px; margin: 0 auto; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 8px; padding: 0 16px; gap: 10px; }
+  .search-bar .region { color: #555; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .search-bar .sep { color: #333; flex-shrink: 0; }
+  .search-bar input { flex: 1; padding: 14px 0; background: transparent; border: none; color: #c0c4cc; font-size: 15px; outline: none; }
+  .search-bar input::placeholder { color: #555; }
+  .search-bar .search-icon { color: #555; font-size: 28px; flex-shrink: 0; cursor: pointer; background: none; border: none; transform: scaleX(-1); }
+  .patch-info { margin-top: 16px; color: #666; font-size: 13px; }
+
+  /* Tier Filter */
+  .tier-filter { display: flex; justify-content: center; gap: 8px; padding: 16px 24px; }
+  .tier-btn { padding: 6px 16px; border-radius: 20px; border: 1px solid #2a2d3a; background: transparent; color: #999; font-size: 13px; cursor: pointer; }
+  .tier-btn.active { background: #5a73c8; border-color: #5a73c8; color: #fff; }
+
+  /* Section */
+  .section { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+  .section-title { font-size: 18px; font-weight: 600; }
+  .view-all { color: #5a73c8; text-decoration: none; font-size: 14px; font-weight: 500; }
+
+  /* Deck Cards */
+  .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .deck-card { background: #161923; border: 1px solid #2a2d3a; border-radius: 10px; padding: 16px; cursor: pointer; transition: border-color 0.2s; position: relative; }
+  .deck-card:hover { border-color: #5a73c8; }
+  .deck-card:hover .hover-tip { opacity: 1; }
+  .hover-tip { position: absolute; top: 8px; right: 8px; background: #2a2d3a; color: #999; font-size: 11px; padding: 3px 8px; border-radius: 4px; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: #5a73c8; color: #fff; padding: 10px 24px; border-radius: 8px; font-size: 14px; z-index: 100; display: none; }
+  .deck-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .deck-name-group { display: flex; align-items: center; gap: 6px; }
+  .deck-name { font-size: 15px; font-weight: 600; line-height: 24px; }
+  .tier-badge { width: 24px; height: 24px; border-radius: 4px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
+  .tier-s { background: #c4444f; color: #fff; }
+  .tier-a { background: #c47a2a; color: #fff; }
+  .tags { display: flex; gap: 4px; }
+  .tag { padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+  .tag-hot { background: #3d2428; color: #e8737b; }
+  .tag-honey { background: #3a3524; color: #d4b254; }
+  .tag-new { background: #243a2a; color: #6dbd7e; }
+  .tag-up { background: #24283d; color: #7a9fe0; }
+
+  .champ-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; }
+  .champ { display: flex; flex-direction: column; align-items: center; }
+  .champ-icon { width: 36px; height: 36px; border-radius: 6px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #666; flex-shrink: 0; }
+  .champ-items { display: flex; gap: 1px; margin-top: -9px; position: relative; z-index: 1; height: 11px; flex-shrink: 0; }
+  .champ-items-placeholder { height: 2px; flex-shrink: 0; }
+  .item-dot { width: 11px; height: 11px; border-radius: 2px; background: #3a3520; border: 1px solid #555; }
+  .champ-label { font-size: 10px; color: #888; }
+
+  .deck-stats { display: flex; justify-content: space-between; color: #999; font-size: 13px; }
+  .stat-value { color: #c0c4cc; font-weight: 600; }
+  .stat-good { color: #6dbd7e; }
+  .stat-bad { color: #c47272; }
+
+  /* Traits */
+  .trait-row { display: flex; gap: 6px; margin-bottom: 8px; font-size: 12px; color: #888; }
+
+  /* Support */
+  .support-section { max-width: 1100px; margin: 24px auto 0; padding: 0 24px; }
+  .support-box { background: #161923; border: 1px solid #2a2d3a; border-radius: 12px; padding: 32px; text-align: center; }
+  .support-box h3 { font-size: 16px; font-weight: 600; color: #c0c4cc; margin-bottom: 8px; }
+  .support-box p { font-size: 13px; color: #888; margin-bottom: 20px; }
+  .support-buttons { display: flex; justify-content: center; gap: 12px; }
+  .support-btn { padding: 10px 24px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; border: none; }
+  .support-btn-primary { background: #5a73c8; color: #fff; }
+  .support-btn-secondary { background: transparent; border: 1px solid #2a2d3a; color: #999; }
+
+  /* Footer */
+  .footer { text-align: center; padding: 32px; color: #444; font-size: 12px; border-top: 1px solid #1e2130; margin-top: 48px; }
+
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header-bg">
+<header class="header">
+  <div style="display:flex;align-items:center;gap:24px;">
+    <a href="#" class="logo" style="text-decoration:none;"><span style="display:inline-block;width:32px;height:32px;background:#2a2d3a;border-radius:6px;vertical-align:middle;margin-right:4px;text-align:center;line-height:32px;font-size:14px;color:#5a73c8;">🎲</span></a>
+    <nav class="nav">
+      <a href="#">덱</a>
+    </nav>
+  </div>
+  <div class="header-right">
+    <div class="header-search">
+      <input type="text" placeholder="플레이어#태그로 전적 검색">
+      <button class="search-icon">⌕</button>
+    </div>
+    <select class="lang-select">
+      <option>🇰🇷&ensp;KO</option>
+      <option>🇺🇸&ensp;EN</option>
+    </select>
+  </div>
+</header>
+</div>
+
+<!-- Hero: Search + Patch Info -->
+<section class="hero">
+  <h1>TFT 메타를 한눈에</h1>
+  <p>메타 덱 추천 · AI 분석 리포트 · 전적 검색</p>
+  <div class="search-bar">
+    <input type="text" placeholder="플레이어#태그로 전적 검색">
+    <button class="search-icon">⌕</button>
+  </div>
+  <div class="patch-info">패치 14.21 · 52,341 매치 분석 · 30분 전 갱신</div>
+</section>
+
+<!-- Meta Deck Tierlist -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">14.21 패치 메타 덱</h2>
+    <a href="#" class="view-all">전체 보기</a>
+  </div>
+  <div class="deck-grid">
+
+    <!-- Deck Card 1: S Tier -->
+    <div class="deck-card">
+      <span class="hover-tip">클릭하여 팀 코드 복사하기</span>
+      <div class="deck-card-top">
+        <span class="tier-badge tier-s">S</span>
+        <div class="deck-name-group">
+          <span class="deck-name">벌꿀 베이가</span>
+          <span class="tag tag-hot">🔥 Hot</span>
+        </div>
+      </div>
+      <div class="trait-row">
+        <span>5 벌꿀</span><span>·</span><span>3 현자</span><span>·</span><span>3 요정</span>
+      </div>
+      <div class="champ-row">
+        <div class="champ"><div class="champ-icon">뽀삐</div><div class="champ-items-placeholder"></div><div class="champ-label">뽀삐</div></div>
+        <div class="champ"><div class="champ-icon">코그</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">코그모</div></div>
+        <div class="champ"><div class="champ-icon">블리</div><div class="champ-items-placeholder"></div><div class="champ-label">블리츠</div></div>
+        <div class="champ"><div class="champ-icon">룰루</div><div class="champ-items-placeholder"></div><div class="champ-label">룰루</div></div>
+        <div class="champ"><div class="champ-icon">나미</div><div class="champ-items-placeholder"></div><div class="champ-label">나미</div></div>
+        <div class="champ"><div class="champ-icon">니코</div><div class="champ-items-placeholder"></div><div class="champ-label">니코</div></div>
+        <div class="champ"><div class="champ-icon">소라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">소라카</div></div>
+        <div class="champ"><div class="champ-icon">베이</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">베이가</div></div>
+      </div>
+      <div class="deck-stats">
+        <span>순방률 <span class="stat-value stat-good">58.3%</span></span>
+        <span>평균 <span class="stat-value stat-good">3.2등</span></span>
+        <span>1등 <span class="stat-value stat-good">18.2%</span></span>
+      </div>
+    </div>
+
+    <!-- Deck Card 2: S Tier + Honey -->
+    <div class="deck-card">
+      <span class="hover-tip">클릭하여 팀 코드 복사하기</span>
+      <div class="deck-card-top">
+        <span class="tier-badge tier-s">S</span>
+        <div class="deck-name-group">
+          <span class="deck-name">선봉대 가렌</span>
+          <span class="tag tag-honey">🍯 꿀</span>
+          <span class="tag tag-new">🆕 New</span>
+        </div>
+      </div>
+      <div class="trait-row">
+        <span>4 선봉대</span><span>·</span><span>4 전사</span><span>·</span><span>2 수호자</span>
+      </div>
+      <div class="champ-row">
+        <div class="champ"><div class="champ-icon">뽀삐</div><div class="champ-items-placeholder"></div><div class="champ-label">뽀삐</div></div>
+        <div class="champ"><div class="champ-icon">잭스</div><div class="champ-items-placeholder"></div><div class="champ-label">잭스</div></div>
+        <div class="champ"><div class="champ-icon">브라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">브라움</div></div>
+        <div class="champ"><div class="champ-icon">세주</div><div class="champ-items-placeholder"></div><div class="champ-label">세주아니</div></div>
+        <div class="champ"><div class="champ-icon">다리</div><div class="champ-items-placeholder"></div><div class="champ-label">다리우스</div></div>
+        <div class="champ"><div class="champ-icon">렉사</div><div class="champ-items-placeholder"></div><div class="champ-label">렉사이</div></div>
+        <div class="champ"><div class="champ-icon">판테</div><div class="champ-items-placeholder"></div><div class="champ-label">판테온</div></div>
+        <div class="champ"><div class="champ-icon">가렌</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">가렌</div></div>
+      </div>
+      <div class="deck-stats">
+        <span>순방률 <span class="stat-value stat-good">62.1%</span></span>
+        <span>평균 <span class="stat-value stat-good">2.8등</span></span>
+        <span>1등 <span class="stat-value stat-good">24.5%</span></span>
+      </div>
+    </div>
+
+    <!-- Deck Card 3: S Tier + 개꿀 -->
+    <div class="deck-card">
+      <span class="hover-tip">클릭하여 팀 코드 복사하기</span>
+      <div class="deck-card-top">
+        <span class="tier-badge tier-s">S</span>
+        <div class="deck-name-group">
+          <span class="deck-name">암흑 신드라</span>
+          <span class="tag tag-honey">🍯🍯 개꿀</span>
+        </div>
+      </div>
+      <div class="trait-row">
+        <span>4 암흑</span><span>·</span><span>3 현자</span><span>·</span><span>2 학자</span>
+      </div>
+      <div class="champ-row">
+        <div class="champ"><div class="champ-icon">카서</div><div class="champ-items-placeholder"></div><div class="champ-label">카서스</div></div>
+        <div class="champ"><div class="champ-icon">스웨</div><div class="champ-items-placeholder"></div><div class="champ-label">스웨인</div></div>
+        <div class="champ"><div class="champ-icon">나미</div><div class="champ-items-placeholder"></div><div class="champ-label">나미</div></div>
+        <div class="champ"><div class="champ-icon">말자</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">말자하</div></div>
+        <div class="champ"><div class="champ-icon">잔나</div><div class="champ-items-placeholder"></div><div class="champ-label">잔나</div></div>
+        <div class="champ"><div class="champ-icon">모르</div><div class="champ-items-placeholder"></div><div class="champ-label">모르가나</div></div>
+        <div class="champ"><div class="champ-icon">소라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">소라카</div></div>
+        <div class="champ"><div class="champ-icon">신드</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">신드라</div></div>
+      </div>
+      <div class="deck-stats">
+        <span>순방률 <span class="stat-value stat-good">65.4%</span></span>
+        <span>평균 <span class="stat-value stat-good">2.5등</span></span>
+        <span>1등 <span class="stat-value stat-good">28.1%</span></span>
+      </div>
+    </div>
+
+    <!-- Deck Card 4: A Tier -->
+    <div class="deck-card">
+      <span class="hover-tip">클릭하여 팀 코드 복사하기</span>
+      <div class="deck-card-top">
+        <span class="tier-badge tier-a">A</span>
+        <div class="deck-name-group">
+          <span class="deck-name">요정 카르마</span>
+          <span class="tag tag-up">📈 상승</span>
+        </div>
+      </div>
+      <div class="trait-row">
+        <span>5 요정</span><span>·</span><span>3 현자</span><span>·</span><span>2 학자</span>
+      </div>
+      <div class="champ-row">
+        <div class="champ"><div class="champ-icon">룰루</div><div class="champ-items-placeholder"></div><div class="champ-label">룰루</div></div>
+        <div class="champ"><div class="champ-icon">니코</div><div class="champ-items-placeholder"></div><div class="champ-label">니코</div></div>
+        <div class="champ"><div class="champ-icon">나미</div><div class="champ-items-placeholder"></div><div class="champ-label">나미</div></div>
+        <div class="champ"><div class="champ-icon">잔나</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">잔나</div></div>
+        <div class="champ"><div class="champ-icon">질리</div><div class="champ-items-placeholder"></div><div class="champ-label">질리언</div></div>
+        <div class="champ"><div class="champ-icon">모르</div><div class="champ-items-placeholder"></div><div class="champ-label">모르가나</div></div>
+        <div class="champ"><div class="champ-icon">소라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">소라카</div></div>
+        <div class="champ"><div class="champ-icon">카르</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">카르마</div></div>
+      </div>
+      <div class="deck-stats">
+        <span>순방률 <span class="stat-value stat-good">55.7%</span></span>
+        <span>평균 <span class="stat-value stat-good">3.5등</span></span>
+        <span>1등 <span class="stat-value">14.3%</span></span>
+      </div>
+    </div>
+
+    <!-- Deck Card 5: A Tier -->
+    <div class="deck-card">
+      <span class="hover-tip">클릭하여 팀 코드 복사하기</span>
+      <div class="deck-card-top">
+        <span class="tier-badge tier-a">A</span>
+        <div class="deck-name-group">
+          <span class="deck-name">사냥꾼 코그모</span>
+        </div>
+      </div>
+      <div class="trait-row">
+        <span>3 사냥꾼</span><span>·</span><span>3 벌꿀</span><span>·</span><span>2 포식자</span>
+      </div>
+      <div class="champ-row">
+        <div class="champ"><div class="champ-icon">뽀삐</div><div class="champ-items-placeholder"></div><div class="champ-label">뽀삐</div></div>
+        <div class="champ"><div class="champ-icon">코그</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">코그모</div></div>
+        <div class="champ"><div class="champ-icon">블리</div><div class="champ-items-placeholder"></div><div class="champ-label">블리츠</div></div>
+        <div class="champ"><div class="champ-icon">케넨</div><div class="champ-items-placeholder"></div><div class="champ-label">케넨</div></div>
+        <div class="champ"><div class="champ-icon">니코</div><div class="champ-items-placeholder"></div><div class="champ-label">니코</div></div>
+        <div class="champ"><div class="champ-icon">룰루</div><div class="champ-items-placeholder"></div><div class="champ-label">룰루</div></div>
+        <div class="champ"><div class="champ-icon">렉사</div><div class="champ-items-placeholder"></div><div class="champ-label">렉사이</div></div>
+        <div class="champ"><div class="champ-icon">베이</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">베이가</div></div>
+      </div>
+      <div class="deck-stats">
+        <span>순방률 <span class="stat-value stat-good">53.2%</span></span>
+        <span>평균 <span class="stat-value stat-good">3.7등</span></span>
+        <span>1등 <span class="stat-value">12.8%</span></span>
+      </div>
+    </div>
+
+    <!-- Deck Card 6: A Tier -->
+    <div class="deck-card">
+      <span class="hover-tip">클릭하여 팀 코드 복사하기</span>
+      <div class="deck-card-top">
+        <span class="tier-badge tier-a">A</span>
+        <div class="deck-name-group">
+          <span class="deck-name">전사 올라프</span>
+        </div>
+      </div>
+      <div class="trait-row">
+        <span>4 전사</span><span>·</span><span>2 바이킹</span><span>·</span><span>2 수호자</span>
+      </div>
+      <div class="champ-row">
+        <div class="champ"><div class="champ-icon">브라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">브라움</div></div>
+        <div class="champ"><div class="champ-icon">세주</div><div class="champ-items-placeholder"></div><div class="champ-label">세주아니</div></div>
+        <div class="champ"><div class="champ-icon">다리</div><div class="champ-items-placeholder"></div><div class="champ-label">다리우스</div></div>
+        <div class="champ"><div class="champ-icon">잭스</div><div class="champ-items-placeholder"></div><div class="champ-label">잭스</div></div>
+        <div class="champ"><div class="champ-icon">문도</div><div class="champ-items-placeholder"></div><div class="champ-label">문도</div></div>
+        <div class="champ"><div class="champ-icon">렉사</div><div class="champ-items-placeholder"></div><div class="champ-label">렉사이</div></div>
+        <div class="champ"><div class="champ-icon">탐켄</div><div class="champ-items-placeholder"></div><div class="champ-label">탐켄치</div></div>
+        <div class="champ"><div class="champ-icon">올라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">올라프</div></div>
+      </div>
+      <div class="deck-stats">
+        <span>순방률 <span class="stat-value stat-good">52.8%</span></span>
+        <span>평균 <span class="stat-value stat-good">3.8등</span></span>
+        <span>1등 <span class="stat-value">8.4%</span></span>
+      </div>
+    </div>
+
+    <!-- Deck Card 7: A Tier -->
+    <div class="deck-card">
+      <span class="hover-tip">클릭하여 팀 코드 복사하기</span>
+      <div class="deck-card-top">
+        <span class="tier-badge tier-a">A</span>
+        <div class="deck-name-group">
+          <span class="deck-name">마법사 럭스</span>
+          <span class="tag tag-hot">🔥 Hot</span>
+        </div>
+      </div>
+      <div class="trait-row">
+        <span>4 마법사</span><span>·</span><span>2 학자</span><span>·</span><span>3 요정</span>
+      </div>
+      <div class="champ-row">
+        <div class="champ"><div class="champ-icon">룰루</div><div class="champ-items-placeholder"></div><div class="champ-label">룰루</div></div>
+        <div class="champ"><div class="champ-icon">니코</div><div class="champ-items-placeholder"></div><div class="champ-label">니코</div></div>
+        <div class="champ"><div class="champ-icon">나미</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">나미</div></div>
+        <div class="champ"><div class="champ-icon">잔나</div><div class="champ-items-placeholder"></div><div class="champ-label">잔나</div></div>
+        <div class="champ"><div class="champ-icon">질리</div><div class="champ-items-placeholder"></div><div class="champ-label">질리언</div></div>
+        <div class="champ"><div class="champ-icon">소라</div><div class="champ-items-placeholder"></div><div class="champ-label">소라카</div></div>
+        <div class="champ"><div class="champ-icon">카르</div><div class="champ-items-placeholder"></div><div class="champ-label">카르마</div></div>
+        <div class="champ"><div class="champ-icon">럭스</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">럭스</div></div>
+      </div>
+      <div class="deck-stats">
+        <span>순방률 <span class="stat-value stat-good">54.1%</span></span>
+        <span>평균 <span class="stat-value stat-good">3.6등</span></span>
+        <span>1등 <span class="stat-value">13.5%</span></span>
+      </div>
+    </div>
+
+    <!-- Deck Card 8: A Tier -->
+    <div class="deck-card">
+      <span class="hover-tip">클릭하여 팀 코드 복사하기</span>
+      <div class="deck-card-top">
+        <span class="tier-badge tier-a">A</span>
+        <div class="deck-name-group">
+          <span class="deck-name">용 쉬바나</span>
+          <span class="tag tag-new">🆕 New</span>
+        </div>
+      </div>
+      <div class="trait-row">
+        <span>3 용</span><span>·</span><span>2 변신술사</span><span>·</span><span>4 전사</span>
+      </div>
+      <div class="champ-row">
+        <div class="champ"><div class="champ-icon">니달</div><div class="champ-items-placeholder"></div><div class="champ-label">니달리</div></div>
+        <div class="champ"><div class="champ-icon">엘리</div><div class="champ-items-placeholder"></div><div class="champ-label">엘리스</div></div>
+        <div class="champ"><div class="champ-icon">스웨</div><div class="champ-items-placeholder"></div><div class="champ-label">스웨인</div></div>
+        <div class="champ"><div class="champ-icon">잭스</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">잭스</div></div>
+        <div class="champ"><div class="champ-icon">세주</div><div class="champ-items-placeholder"></div><div class="champ-label">세주아니</div></div>
+        <div class="champ"><div class="champ-icon">렉사</div><div class="champ-items-placeholder"></div><div class="champ-label">렉사이</div></div>
+        <div class="champ"><div class="champ-icon">브라</div><div class="champ-items-placeholder"></div><div class="champ-label">브라움</div></div>
+        <div class="champ"><div class="champ-icon">쉬바</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">쉬바나</div></div>
+      </div>
+      <div class="deck-stats">
+        <span>순방률 <span class="stat-value stat-good">51.9%</span></span>
+        <span>평균 <span class="stat-value stat-good">3.9등</span></span>
+        <span>1등 <span class="stat-value">7.2%</span></span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Support -->
+<div class="support-section">
+  <div class="support-box">
+    <h3>롤체토스를 응원해주세요</h3>
+    <p>광고 없이 운영되는 서비스입니다. 후원으로 서버 비용과 개발을 지원해주세요.</p>
+    <div class="support-buttons">
+      <a href="#" class="support-btn support-btn-primary">☕ 커피 한 잔 후원하기</a>
+      <a href="#" class="support-btn support-btn-secondary">Discord 참여</a>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  롤체토스 · 롤체토스 isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties.
+</footer>
+
+<script>
+document.querySelectorAll('.deck-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const tip = card.querySelector('.hover-tip');
+    tip.textContent = '팀 코드가 복사되었습니다!';
+    tip.style.opacity = '1';
+    tip.style.background = '#5a73c8';
+    tip.style.color = '#fff';
+    setTimeout(() => {
+      tip.textContent = '클릭하여 팀 코드 복사하기';
+      tip.style.background = '';
+      tip.style.color = '';
+      tip.style.opacity = '';
+    }, 1500);
+  });
+});
+</script>
+
+</body>
+</html>

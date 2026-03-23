@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>롤체토스 - 덱 페이지 와이어프레임</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #0f1118; color: #c0c4cc; }
+  .header-bg { background: #161923; border-bottom: 1px solid #2a2d3a; }
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; max-width: 1100px; margin: 0 auto; }
+  .logo { font-size: 20px; font-weight: 700; color: #5a73c8; text-decoration: none; }
+  .nav { display: flex; gap: 24px; }
+  .nav a { color: #c0c4cc; text-decoration: none; font-size: 14px; }
+  .nav a.active { color: #e0e0e0; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .header-search { display: flex; align-items: center; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 0 12px; gap: 8px; }
+  .header-search input { padding: 7px 0; background: transparent; border: none; color: #c0c4cc; font-size: 13px; width: 200px; outline: none; }
+  .header-search input::placeholder { color: #555; }
+  .header-search .search-icon { color: #555; font-size: 22px; flex-shrink: 0; cursor: pointer; background: none; border: none; transform: scaleX(-1); }
+  .lang-select { background: #1e2130; border: 1px solid #2a2d3a; color: #c0c4cc; padding: 6px 12px; border-radius: 6px; font-size: 13px; }
+  .select { background: #1e2130; border: 1px solid #2a2d3a; color: #c0c4cc; padding: 6px 12px; border-radius: 6px; font-size: 13px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+  /* Filters Bar */
+  .filters-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+  .filter-group { display: flex; align-items: center; gap: 6px; }
+  .filter-label { font-size: 12px; color: #888; }
+  .filter-chips { display: flex; gap: 4px; }
+  .chip { padding: 5px 12px; border-radius: 16px; border: 1px solid #2a2d3a; background: transparent; color: #999; font-size: 12px; cursor: pointer; }
+  .chip.active { background: #5a73c8; border-color: #5a73c8; color: #fff; }
+  .sort-select { margin-left: auto; }
+
+  /* Deck List */
+  .deck-list { display: flex; flex-direction: column; gap: 8px; }
+  .deck-row { background: #161923; border: 1px solid #2a2d3a; border-radius: 10px; cursor: pointer; transition: border-color 0.2s; position: relative; }
+  .deck-row:hover { border-color: #5a73c8; }
+  .deck-row-header { display: flex; align-items: center; padding: 14px 18px; gap: 16px; }
+  .rank-num { font-size: 16px; font-weight: 700; color: #555; width: 24px; text-align: center; }
+  .tier-badge { width: 24px; height: 24px; border-radius: 4px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
+  .tier-s { background: #c4444f; color: #fff; }
+  .tier-a { background: #c47a2a; color: #fff; }
+  .tier-b { background: #4a7bb5; color: #fff; }
+  .tier-c { background: #666; color: #fff; }
+  .deck-name-group { display: flex; flex-direction: column; gap: 4px; min-width: 120px; }
+  .deck-name { font-size: 16px; font-weight: 600; }
+  .tags { display: flex; gap: 4px; }
+  .tags:empty { display: none; }
+  .tag { padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+  .tag-hot { background: #3d2428; color: #e8737b; }
+  .tag-honey { background: #3a3524; color: #d4b254; }
+  .tag-new { background: #243a2a; color: #6dbd7e; }
+  .tag-up { background: #24283d; color: #7a9fe0; }
+  .tag-down { background: #262626; color: #999; }
+  .champ-row { display: grid; grid-template-columns: repeat(10, 44px); gap: 4px; }
+  .champ { display: flex; flex-direction: column; align-items: center; }
+  .champ-icon { width: 42px; height: 42px; border-radius: 5px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #666; flex-shrink: 0; }
+  .champ-items { display: flex; gap: 1px; margin-top: -10px; position: relative; z-index: 1; height: 14px; flex-shrink: 0; margin-bottom: 2px; }
+  .champ-items-placeholder { height: 6px; flex-shrink: 0; }
+  .item-dot { width: 14px; height: 14px; border-radius: 3px; background: #3a3520; border: 1px solid #555; }
+  .champ-label { font-size: 10px; color: #888; }
+  .deck-stats-inline { display: flex; gap: 16px; margin: 0 auto; }
+  .deck-stats-inline .stat-item { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .stat-val { color: #c0c4cc; font-weight: 700; font-size: 18px; line-height: 1; }
+  .stat-label { color: #888; font-size: 11px; margin-top: 2px; }
+  .stat-good { color: #6dbd7e; }
+  .stat-bad { color: #c47272; }
+  .row-icon { position: absolute; right: 6px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #555; font-size: 13px; }
+  .copy-btn { top: 6px; background: transparent; border: none; cursor: pointer; z-index: 2; }
+  .copy-btn:hover { color: #5a73c8; }
+  .copy-btn::after { content: '팀 코드 복사'; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #2a2d3a; color: #c0c4cc; font-size: 11px; padding: 4px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; }
+  .copy-btn:hover::after { opacity: 1; }
+  .expand-icon { bottom: 6px; transition: transform 0.2s; }
+
+  /* Expanded Detail */
+  .deck-detail { max-height: 0; overflow: hidden; padding: 0 18px; border-top: 1px solid transparent; transition: max-height 0.4s ease, padding 0.4s ease, border-color 0.4s ease; }
+  .deck-row.open .deck-detail { max-height: 800px; overflow: visible; padding: 0 18px 18px; border-top-color: #2a2d3a; }
+  .deck-row.open .expand-icon { transform: rotate(180deg); }
+  .detail-grid { display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: auto 1fr; gap: 12px; margin-top: 16px; }
+  .detail-placement { grid-column: 1; grid-row: 1; }
+  .detail-items { grid-column: 1; grid-row: 2; }
+  .detail-guide { grid-column: 2; grid-row: 1; }
+  .detail-augments { grid-column: 2; grid-row: 2; }
+  .hex-board { position: relative; width: 434px; margin: 16px auto 0; padding-bottom: 16px; }
+  .hex-row { display: flex; gap: 2px; margin-bottom: -16px; }
+  .hex-row.offset { margin-left: 31px; }
+  .hex { width: 60px; height: 68px; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); background: #252836; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #555; flex-shrink: 0; }
+  .hex.occupied { background: #3a3d4a; color: #c0c4cc; font-size: 10px; font-weight: 600; }
+  .detail-section { background: #1a1d28; border-radius: 8px; padding: 14px; }
+  .detail-title { font-size: 13px; font-weight: 600; color: #5a73c8; margin-bottom: 10px; text-align: center; }
+  .item-priority { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; justify-content: center; }
+  .item-pri { width: 42px; height: 42px; border-radius: 5px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 14px; position: relative; }
+  .item-pri .item-count { position: absolute; bottom: -2px; right: -2px; font-size: 12px; color: #c0c4cc; font-weight: 700; background: #0f1118; padding: 1px 4px; border-radius: 3px; }
+  .item-sep { color: #555; font-size: 14px; margin: 0 2px; }
+  .augment-list { display: grid; grid-template-columns: auto auto; gap: 4px 12px; font-size: 13px; justify-content: center; }
+  .augment-name { color: #ccc; }
+  .augment-rate { color: #6dbd7e; font-size: 12px; text-align: right; }
+  .level-guide { display: grid; grid-template-columns: auto auto; gap: 4px 12px; font-size: 13px; color: #999; justify-content: center; }
+  .level-guide .lv { color: #5a73c8; font-weight: 600; text-align: right; }
+  .team-code-btn { margin-top: 12px; padding: 8px 16px; background: #5a73c8; border: none; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; }
+  .stat-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 12px; }
+  .stat-label { color: #888; width: 60px; }
+  .stat-bar-bg { flex: 1; height: 6px; background: #2a2d3a; border-radius: 3px; }
+  .stat-bar-fill { height: 100%; border-radius: 3px; }
+
+  .footer { text-align: center; padding: 32px; color: #444; font-size: 12px; border-top: 1px solid #1e2130; margin-top: 48px; }
+</style>
+</head>
+<body>
+
+<div class="header-bg">
+<header class="header">
+  <div style="display:flex;align-items:center;gap:24px;">
+    <a href="#" class="logo" style="text-decoration:none;"><span style="display:inline-block;width:32px;height:32px;background:#2a2d3a;border-radius:6px;vertical-align:middle;margin-right:4px;text-align:center;line-height:32px;font-size:14px;color:#5a73c8;">🎲</span></a>
+    <nav class="nav">
+      <a href="#" class="active">덱</a>
+    </nav>
+  </div>
+  <div class="header-right">
+    <div class="header-search">
+      <input type="text" placeholder="플레이어#태그로 전적 검색">
+      <button class="search-icon">⌕</button>
+    </div>
+    <select class="lang-select">
+      <option>🇰🇷&ensp;KO</option>
+      <option>🇺🇸&ensp;EN</option>
+    </select>
+  </div>
+</header>
+</div>
+
+<div class="container">
+  <!-- Patch Title -->
+  <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;">14.21 패치 메타 덱</h2>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <select class="select" title="실제 구현 시 랭크 아이콘 포함 커스텀 드롭다운">
+        <option selected>🔷 플래티넘+</option>
+        <option>💠 다이아몬드+</option>
+        <option>🟣 마스터+</option>
+        <option>🔴 그랜드마스터+</option>
+        <option>👑 챌린저</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <select class="select">
+        <option selected>C+</option>
+        <option>B+</option>
+        <option>A+</option>
+        <option>S</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <select class="select"><option>특성</option></select>
+    </div>
+    <div class="filter-group">
+      <select class="select"><option>기물</option></select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">태그</span>
+      <div class="filter-chips">
+        <span class="chip">🍯 꿀</span>
+        <span class="chip">🔥 Hot</span>
+        <span class="chip">🆕 New</span>
+      </div>
+    </div>
+    <div class="filter-group sort-select">
+      <select class="select"><option>티어</option><option>순방률</option><option>평균 등수</option><option>픽률</option><option>1등 확률</option></select>
+    </div>
+  </div>
+
+  <!-- Deck List -->
+  <div class="deck-list">
+
+    <!-- Deck 1: Expanded -->
+    <div class="deck-row" onclick="this.classList.toggle('open')">
+      <button class="row-icon copy-btn" onclick="event.stopPropagation();">📋</button>
+      <div class="deck-row-header">
+
+        <span class="tier-badge tier-s">S</span>
+        <div class="deck-name-group">
+          <span class="deck-name">벌꿀 베이가</span><div class="tags"><span class="tag tag-hot">🔥 Hot</span></div>
+        </div>
+        <div class="champ-row">
+          <div class="champ"><div class="champ-icon">뽀삐</div><div class="champ-items-placeholder"></div><div class="champ-label">뽀삐</div></div>
+          <div class="champ"><div class="champ-icon">코그</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">코그모</div></div>
+          <div class="champ"><div class="champ-icon">블리</div><div class="champ-items-placeholder"></div><div class="champ-label">블리츠</div></div>
+          <div class="champ"><div class="champ-icon">룰루</div><div class="champ-items-placeholder"></div><div class="champ-label">룰루</div></div>
+          <div class="champ"><div class="champ-icon">나미</div><div class="champ-items-placeholder"></div><div class="champ-label">나미</div></div>
+          <div class="champ"><div class="champ-icon">니코</div><div class="champ-items-placeholder"></div><div class="champ-label">니코</div></div>
+          <div class="champ"><div class="champ-icon">소라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">소라카</div></div>
+          <div class="champ"><div class="champ-icon">베이</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">베이가</div></div>
+          <div class="champ"><div class="champ-icon">질리</div><div class="champ-items-placeholder"></div><div class="champ-label">질리언</div></div><div class="champ"><div class="champ-icon">잔나</div><div class="champ-items-placeholder"></div><div class="champ-label">잔나</div></div>
+        </div>
+        <div class="deck-stats-inline">
+          <span class="stat-item"><span class="stat-val stat-good">58.3%</span><span class="stat-label">순방 확률</span></span>
+          <span class="stat-item"><span class="stat-val stat-good">3.2등</span><span class="stat-label">평균 등수</span></span>
+          <span class="stat-item"><span class="stat-val stat-good">18.2%</span><span class="stat-label">1등 확률</span></span>
+          <span class="stat-item"><span class="stat-val">8.1%</span><span class="stat-label">선택률</span></span>
+        </div>
+        <span class="row-icon expand-icon">▼</span>
+      </div>
+      <div class="deck-detail">
+        <div class="detail-grid">
+          <div class="detail-section detail-placement">
+            <div class="detail-title">추천 배치</div>
+            <div class="hex-board">
+              <div class="hex-row">
+                <div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div>
+              </div>
+              <div class="hex-row offset">
+                <div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div>
+              </div>
+              <div class="hex-row">
+                <div class="hex occupied">뽀삐</div><div class="hex"></div><div class="hex occupied">블리</div><div class="hex"></div><div class="hex occupied">니코</div><div class="hex"></div><div class="hex occupied">나미</div>
+              </div>
+              <div class="hex-row offset">
+                <div class="hex"></div><div class="hex occupied">코그</div><div class="hex"></div><div class="hex occupied">소라</div><div class="hex"></div><div class="hex occupied">베이</div><div class="hex"></div>
+              </div>
+            </div>
+          </div>
+          <div class="detail-section detail-guide">
+            <div class="detail-title">레벨별 가이드</div>
+            <div class="level-guide">
+              <span class="lv">Lv.4</span><span>벌꿀 2 + 현자 2</span>
+              <span class="lv">Lv.5</span><span>벌꿀 3 코어</span>
+              <span class="lv">Lv.6</span><span>벌꿀 4 + 현자 2 완성</span>
+              <span class="lv">Lv.7</span><span>니코 추가, 벌꿀 5</span>
+              <span class="lv">Lv.8</span><span>나미 + 소라카, 현자 4</span>
+              <span class="lv">Lv.9</span><span>5코 유닛 추가</span>
+            </div>
+          </div>
+          <div class="detail-section detail-items">
+            <div class="detail-title">조합 아이템 우선순위</div>
+            <div class="item-priority">
+              <div class="item-pri">🪄<span class="item-count">x3</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">📕<span class="item-count">x3</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">💧<span class="item-count">x3</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">🗡️<span class="item-count">x2</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">🧥<span class="item-count">x2</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">💚<span class="item-count">x2</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">🏹<span class="item-count">x1</span></div>
+            </div>
+          </div>
+          <div class="detail-section detail-augments">
+            <div class="detail-title">추천 증강</div>
+            <div class="augment-list">
+              <span class="augment-name">벌꿀 영혼</span><span class="augment-rate">64.2%</span>
+              <span class="augment-name">마나 흐름 대역</span><span class="augment-rate">59.8%</span>
+              <span class="augment-name">최후의 저항</span><span class="augment-rate">57.1%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deck 2: Collapsed -->
+    <div class="deck-row" onclick="this.classList.toggle('open')">
+      <button class="row-icon copy-btn" onclick="event.stopPropagation();">📋</button>
+      <div class="deck-row-header">
+
+        <span class="tier-badge tier-s">S</span>
+        <div class="deck-name-group">
+          <span class="deck-name">선봉대 가렌</span><div class="tags"><span class="tag tag-honey">🍯 꿀</span><span class="tag tag-new">🆕 New</span></div>
+        </div>
+        <div class="champ-row">
+          <div class="champ"><div class="champ-icon">뽀삐</div><div class="champ-items-placeholder"></div><div class="champ-label">뽀삐</div></div><div class="champ"><div class="champ-icon">잭스</div><div class="champ-items-placeholder"></div><div class="champ-label">잭스</div></div><div class="champ"><div class="champ-icon">브라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">브라움</div></div><div class="champ"><div class="champ-icon">세주</div><div class="champ-items-placeholder"></div><div class="champ-label">세주아니</div></div><div class="champ"><div class="champ-icon">다리</div><div class="champ-items-placeholder"></div><div class="champ-label">다리우스</div></div><div class="champ"><div class="champ-icon">렉사</div><div class="champ-items-placeholder"></div><div class="champ-label">렉사이</div></div><div class="champ"><div class="champ-icon">판테</div><div class="champ-items-placeholder"></div><div class="champ-label">판테온</div></div><div class="champ"><div class="champ-icon">가렌</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">가렌</div></div>
+        </div>
+        <div class="deck-stats-inline">
+          <span class="stat-item"><span class="stat-val stat-good">62.1%</span><span class="stat-label">순방 확률</span></span>
+          <span class="stat-item"><span class="stat-val stat-good">2.8등</span><span class="stat-label">평균 등수</span></span>
+          <span class="stat-item"><span class="stat-val stat-good">24.5%</span><span class="stat-label">1등 확률</span></span>
+          <span class="stat-item"><span class="stat-val">2.3%</span><span class="stat-label">선택률</span></span>
+        </div>
+        <span class="row-icon expand-icon">▼</span>
+      </div>
+      <div class="deck-detail">
+        <div class="detail-grid">
+          <div class="detail-section detail-placement">
+              <div class="detail-title">추천 배치</div>
+              <div class="hex-board">
+                <div class="hex-row">
+                  <div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div>
+                </div>
+                <div class="hex-row offset">
+                  <div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div><div class="hex"></div>
+                </div>
+                <div class="hex-row">
+                  <div class="hex occupied">가렌</div><div class="hex occupied">브라</div><div class="hex occupied">세주</div><div class="hex"></div><div class="hex occupied">판테</div><div class="hex"></div><div class="hex"></div>
+                </div>
+                <div class="hex-row offset">
+                  <div class="hex"></div><div class="hex occupied">다리</div><div class="hex occupied">렉사</div><div class="hex occupied">잭스</div><div class="hex occupied">뽀삐</div><div class="hex"></div><div class="hex"></div>
+                </div>
+              </div>
+          </div>
+          <div class="detail-section detail-guide">
+            <div class="detail-title">레벨별 가이드</div>
+            <div class="level-guide">
+              <span class="lv">Lv.4</span><span>선봉 2 + 전사 2</span>
+              <span class="lv">Lv.5</span><span>선봉 3 코어</span>
+              <span class="lv">Lv.6</span><span>선봉 4 완성</span>
+              <span class="lv">Lv.7</span><span>전사 2 추가</span>
+              <span class="lv">Lv.8</span><span>수호 2 + 탱커 보강</span>
+              <span class="lv">Lv.9</span><span>5코 유닛 투입</span>
+            </div>
+          </div>
+          <div class="detail-section detail-items">
+            <div class="detail-title">조합 아이템 우선순위</div>
+            <div class="item-priority">
+              <div class="item-pri">🧥<span class="item-count">x3</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">🗡️<span class="item-count">x2</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">💚<span class="item-count">x2</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">🪄<span class="item-count">x2</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">📕<span class="item-count">x1</span></div>
+              <span class="item-sep">›</span>
+              <div class="item-pri">🏹<span class="item-count">x1</span></div>
+            </div>
+          </div>
+          <div class="detail-section detail-augments">
+            <div class="detail-title">추천 증강</div>
+            <div class="augment-list">
+              <span class="augment-name">선봉대 문장</span><span class="augment-rate">66.1%</span>
+              <span class="augment-name">전선 강화</span><span class="augment-rate">62.4%</span>
+              <span class="augment-name">거인 학살자</span><span class="augment-rate">59.3%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deck 3~8: Collapsed -->
+    <div class="deck-row" onclick="this.classList.toggle('open')"><button class="row-icon copy-btn" onclick="event.stopPropagation();">📋</button><div class="deck-row-header"><span class="tier-badge tier-s">S</span><div class="deck-name-group"><span class="deck-name">암흑 신드라</span><div class="tags"><span class="tag tag-honey">🍯🍯 개꿀</span></div></div><div class="champ-row"><div class="champ"><div class="champ-icon">카서</div><div class="champ-items-placeholder"></div><div class="champ-label">카서스</div></div><div class="champ"><div class="champ-icon">스웨</div><div class="champ-items-placeholder"></div><div class="champ-label">스웨인</div></div><div class="champ"><div class="champ-icon">나미</div><div class="champ-items-placeholder"></div><div class="champ-label">나미</div></div><div class="champ"><div class="champ-icon">말자</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">말자하</div></div><div class="champ"><div class="champ-icon">잔나</div><div class="champ-items-placeholder"></div><div class="champ-label">잔나</div></div><div class="champ"><div class="champ-icon">모르</div><div class="champ-items-placeholder"></div><div class="champ-label">모르가나</div></div><div class="champ"><div class="champ-icon">소라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">소라카</div></div><div class="champ"><div class="champ-icon">신드</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">신드라</div></div><div class="champ"><div class="champ-icon">케넨</div><div class="champ-items-placeholder"></div><div class="champ-label">케넨</div></div></div><div class="deck-stats-inline"><span class="stat-item"><span class="stat-val stat-good">65.4%</span><span class="stat-label">순방 확률</span></span><span class="stat-item"><span class="stat-val stat-good">2.5등</span><span class="stat-label">평균 등수</span></span><span class="stat-item"><span class="stat-val stat-good">28.1%</span><span class="stat-label">1등 확률</span></span><span class="stat-item"><span class="stat-val">1.2%</span><span class="stat-label">선택률</span></span></div><span class="row-icon expand-icon">▼</span></div><div class="deck-detail"></div></div>
+
+    <div class="deck-row" onclick="this.classList.toggle('open')"><button class="row-icon copy-btn" onclick="event.stopPropagation();">📋</button><div class="deck-row-header"><span class="tier-badge tier-a">A</span><div class="deck-name-group"><span class="deck-name">요정 카르마</span><div class="tags"><span class="tag tag-up">📈 상승</span></div></div><div class="champ-row"><div class="champ"><div class="champ-icon">룰루</div><div class="champ-items-placeholder"></div><div class="champ-label">룰루</div></div><div class="champ"><div class="champ-icon">니코</div><div class="champ-items-placeholder"></div><div class="champ-label">니코</div></div><div class="champ"><div class="champ-icon">나미</div><div class="champ-items-placeholder"></div><div class="champ-label">나미</div></div><div class="champ"><div class="champ-icon">잔나</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">잔나</div></div><div class="champ"><div class="champ-icon">질리</div><div class="champ-items-placeholder"></div><div class="champ-label">질리언</div></div><div class="champ"><div class="champ-icon">모르</div><div class="champ-items-placeholder"></div><div class="champ-label">모르가나</div></div><div class="champ"><div class="champ-icon">소라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">소라카</div></div><div class="champ"><div class="champ-icon">카르</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">카르마</div></div></div><div class="deck-stats-inline"><span class="stat-item"><span class="stat-val stat-good">55.7%</span><span class="stat-label">순방 확률</span></span><span class="stat-item"><span class="stat-val stat-good">3.5등</span><span class="stat-label">평균 등수</span></span><span class="stat-item"><span class="stat-val">14.3%</span><span class="stat-label">1등 확률</span></span><span class="stat-item"><span class="stat-val">6.4%</span><span class="stat-label">선택률</span></span></div><span class="row-icon expand-icon">▼</span></div><div class="deck-detail"></div></div>
+
+    <div class="deck-row" onclick="this.classList.toggle('open')"><button class="row-icon copy-btn" onclick="event.stopPropagation();">📋</button><div class="deck-row-header"><span class="tier-badge tier-a">A</span><div class="deck-name-group"><span class="deck-name">사냥꾼 코그모</span><div class="tags"></div></div><div class="champ-row"><div class="champ"><div class="champ-icon">뽀삐</div><div class="champ-items-placeholder"></div><div class="champ-label">뽀삐</div></div><div class="champ"><div class="champ-icon">코그</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">코그모</div></div><div class="champ"><div class="champ-icon">블리</div><div class="champ-items-placeholder"></div><div class="champ-label">블리츠</div></div><div class="champ"><div class="champ-icon">케넨</div><div class="champ-items-placeholder"></div><div class="champ-label">케넨</div></div><div class="champ"><div class="champ-icon">니코</div><div class="champ-items-placeholder"></div><div class="champ-label">니코</div></div><div class="champ"><div class="champ-icon">룰루</div><div class="champ-items-placeholder"></div><div class="champ-label">룰루</div></div><div class="champ"><div class="champ-icon">베이</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">베이가</div></div></div><div class="deck-stats-inline"><span class="stat-item"><span class="stat-val stat-good">53.2%</span><span class="stat-label">순방 확률</span></span><span class="stat-item"><span class="stat-val stat-good">3.7등</span><span class="stat-label">평균 등수</span></span><span class="stat-item"><span class="stat-val">12.8%</span><span class="stat-label">1등 확률</span></span><span class="stat-item"><span class="stat-val">5.8%</span><span class="stat-label">선택률</span></span></div><span class="row-icon expand-icon">▼</span></div><div class="deck-detail"></div></div>
+
+    <div class="deck-row" onclick="this.classList.toggle('open')"><button class="row-icon copy-btn" onclick="event.stopPropagation();">📋</button><div class="deck-row-header"><span class="tier-badge tier-a">A</span><div class="deck-name-group"><span class="deck-name">마법사 럭스</span><div class="tags"><span class="tag tag-hot">🔥 Hot</span></div></div><div class="champ-row"><div class="champ"><div class="champ-icon">룰루</div><div class="champ-items-placeholder"></div><div class="champ-label">룰루</div></div><div class="champ"><div class="champ-icon">니코</div><div class="champ-items-placeholder"></div><div class="champ-label">니코</div></div><div class="champ"><div class="champ-icon">나미</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">나미</div></div><div class="champ"><div class="champ-icon">잔나</div><div class="champ-items-placeholder"></div><div class="champ-label">잔나</div></div><div class="champ"><div class="champ-icon">질리</div><div class="champ-items-placeholder"></div><div class="champ-label">질리언</div></div><div class="champ"><div class="champ-icon">소라</div><div class="champ-items-placeholder"></div><div class="champ-label">소라카</div></div><div class="champ"><div class="champ-icon">카르</div><div class="champ-items-placeholder"></div><div class="champ-label">카르마</div></div><div class="champ"><div class="champ-icon">럭스</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">럭스</div></div></div><div class="deck-stats-inline"><span class="stat-item"><span class="stat-val stat-good">54.1%</span><span class="stat-label">순방 확률</span></span><span class="stat-item"><span class="stat-val stat-good">3.6등</span><span class="stat-label">평균 등수</span></span><span class="stat-item"><span class="stat-val">13.5%</span><span class="stat-label">1등 확률</span></span><span class="stat-item"><span class="stat-val">9.3%</span><span class="stat-label">선택률</span></span></div><span class="row-icon expand-icon">▼</span></div><div class="deck-detail"></div></div>
+
+    <div class="deck-row" onclick="this.classList.toggle('open')"><button class="row-icon copy-btn" onclick="event.stopPropagation();">📋</button><div class="deck-row-header"><span class="tier-badge tier-b">B</span><div class="deck-name-group"><span class="deck-name">전사 올라프</span><div class="tags"><span class="tag tag-down">📉 하락</span></div></div><div class="champ-row"><div class="champ"><div class="champ-icon">브라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">브라움</div></div><div class="champ"><div class="champ-icon">세주</div><div class="champ-items-placeholder"></div><div class="champ-label">세주아니</div></div><div class="champ"><div class="champ-icon">다리</div><div class="champ-items-placeholder"></div><div class="champ-label">다리우스</div></div><div class="champ"><div class="champ-icon">잭스</div><div class="champ-items-placeholder"></div><div class="champ-label">잭스</div></div><div class="champ"><div class="champ-icon">문도</div><div class="champ-items-placeholder"></div><div class="champ-label">문도</div></div><div class="champ"><div class="champ-icon">렉사</div><div class="champ-items-placeholder"></div><div class="champ-label">렉사이</div></div><div class="champ"><div class="champ-icon">탐켄</div><div class="champ-items-placeholder"></div><div class="champ-label">탐켄치</div></div><div class="champ"><div class="champ-icon">올라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">올라프</div></div></div><div class="deck-stats-inline"><span class="stat-item"><span class="stat-val stat-bad">48.2%</span><span class="stat-label">순방 확률</span></span><span class="stat-item"><span class="stat-val stat-bad">4.1등</span><span class="stat-label">평균 등수</span></span><span class="stat-item"><span class="stat-val">8.4%</span><span class="stat-label">1등 확률</span></span><span class="stat-item"><span class="stat-val">7.2%</span><span class="stat-label">선택률</span></span></div><span class="row-icon expand-icon">▼</span></div><div class="deck-detail"></div></div>
+
+    <div class="deck-row" onclick="this.classList.toggle('open')"><button class="row-icon copy-btn" onclick="event.stopPropagation();">📋</button><div class="deck-row-header"><span class="tier-badge tier-b">B</span><div class="deck-name-group"><span class="deck-name">용 쉬바나</span><div class="tags"><span class="tag tag-new">🆕 New</span></div></div><div class="champ-row"><div class="champ"><div class="champ-icon">니달</div><div class="champ-items-placeholder"></div><div class="champ-label">니달리</div></div><div class="champ"><div class="champ-icon">엘리</div><div class="champ-items-placeholder"></div><div class="champ-label">엘리스</div></div><div class="champ"><div class="champ-icon">스웨</div><div class="champ-items-placeholder"></div><div class="champ-label">스웨인</div></div><div class="champ"><div class="champ-icon">잭스</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">잭스</div></div><div class="champ"><div class="champ-icon">세주</div><div class="champ-items-placeholder"></div><div class="champ-label">세주아니</div></div><div class="champ"><div class="champ-icon">렉사</div><div class="champ-items-placeholder"></div><div class="champ-label">렉사이</div></div><div class="champ"><div class="champ-icon">브라</div><div class="champ-items-placeholder"></div><div class="champ-label">브라움</div></div><div class="champ"><div class="champ-icon">쉬바</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">쉬바나</div></div></div><div class="deck-stats-inline"><span class="stat-item"><span class="stat-val stat-bad">46.9%</span><span class="stat-label">순방 확률</span></span><span class="stat-item"><span class="stat-val stat-bad">4.3등</span><span class="stat-label">평균 등수</span></span><span class="stat-item"><span class="stat-val">7.2%</span><span class="stat-label">1등 확률</span></span><span class="stat-item"><span class="stat-val">4.1%</span><span class="stat-label">선택률</span></span></div><span class="row-icon expand-icon">▼</span></div><div class="deck-detail"></div></div>
+
+  </div>
+</div>
+
+<footer class="footer">롤체토스 · Riot Games가 보증하지 않음</footer>
+
+<style>
+  .copy-btn.copied::after { content: '복사되었습니다!' !important; background: #5a73c8 !important; opacity: 1 !important; }
+</style>
+<script>
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 400);
+  });
+});
+</script>
+</body>
+</html>

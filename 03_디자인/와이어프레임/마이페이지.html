@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>롤체토스 - 마이페이지 와이어프레임</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #0f1118; color: #e0e0e0; }
+  .header-bg { background: #161923; border-bottom: 1px solid #2a2d3a; }
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; max-width: 1100px; margin: 0 auto; }
+  .logo { font-size: 20px; font-weight: 700; color: #7c5cfc; text-decoration: none; }
+  .nav { display: flex; gap: 24px; }
+  .nav a { color: #999; text-decoration: none; font-size: 14px; }
+  .nav a.active { color: #fff; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .header-search { display: flex; align-items: center; }
+  .header-search input { padding: 7px 14px; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px 0 0 6px; color: #fff; font-size: 13px; width: 220px; outline: none; }
+  .header-search input::placeholder { color: #555; }
+  .header-search button { padding: 7px 12px; background: #7c5cfc; border: none; border-radius: 0 6px 6px 0; color: #fff; font-size: 13px; cursor: pointer; }
+  .lang-select { background: #1e2130; border: 1px solid #2a2d3a; color: #e0e0e0; padding: 6px 12px; border-radius: 6px; font-size: 13px; }
+  .user-btn { padding: 6px 14px; background: #7c5cfc; border: none; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; }
+  .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+  /* User Info */
+  .user-card { background: #161923; border: 1px solid #2a2d3a; border-radius: 12px; padding: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; }
+  .user-avatar { width: 56px; height: 56px; border-radius: 50%; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .user-info h2 { font-size: 18px; margin-bottom: 4px; }
+  .user-email { color: #888; font-size: 13px; }
+  .riot-link { margin-left: auto; }
+  .riot-link-btn { padding: 8px 16px; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; color: #999; font-size: 13px; cursor: pointer; }
+  .riot-linked { color: #40c060; font-size: 13px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid #2a2d3a; }
+  .tab { padding: 12px 20px; font-size: 14px; color: #999; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab.active { color: #fff; border-bottom-color: #7c5cfc; }
+
+  /* Credits */
+  .credits-card { background: #161923; border: 1px solid #2a2d3a; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .credits-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .credits-title { font-size: 16px; font-weight: 600; }
+  .credits-count { font-size: 28px; font-weight: 700; color: #7c5cfc; }
+  .credits-label { font-size: 13px; color: #888; }
+  .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+  .price-card { background: #1a1d28; border: 1px solid #2a2d3a; border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+  .price-card:hover { border-color: #7c5cfc; }
+  .price-card.popular { border-color: #7c5cfc; position: relative; }
+  .popular-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #7c5cfc; color: #fff; font-size: 11px; padding: 2px 10px; border-radius: 10px; }
+  .price-amount { font-size: 13px; color: #888; margin-bottom: 4px; }
+  .price-value { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .price-per { font-size: 11px; color: #666; }
+  .subscribe-card { background: #1a1d28; border: 1px solid #7c5cfc; border-radius: 8px; padding: 16px; margin-top: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .subscribe-info .sub-name { font-size: 15px; font-weight: 600; color: #7c5cfc; }
+  .subscribe-info .sub-desc { font-size: 13px; color: #888; margin-top: 2px; }
+  .subscribe-price { font-size: 18px; font-weight: 700; }
+  .subscribe-btn { padding: 8px 20px; background: #7c5cfc; border: none; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; }
+
+  /* Report List */
+  .report-list { display: flex; flex-direction: column; gap: 8px; }
+  .report-card { background: #161923; border: 1px solid #2a2d3a; border-radius: 8px; padding: 16px; cursor: pointer; transition: border-color 0.2s; }
+  .report-card:hover { border-color: #7c5cfc; }
+  .report-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .report-placement { font-size: 18px; font-weight: 700; width: 32px; text-align: center; }
+  .rp1 { color: #f0c040; }
+  .rp3 { color: #cd7f32; }
+  .rp5 { color: #d94a4a; }
+  .report-deck { font-size: 14px; font-weight: 600; }
+  .report-date { margin-left: auto; font-size: 12px; color: #666; }
+  .report-summary { font-size: 13px; color: #999; line-height: 1.6; padding: 12px; background: #1a1d28; border-radius: 6px; }
+  .report-summary strong { color: #e0e0e0; }
+  .report-grades { display: flex; gap: 12px; margin-top: 10px; }
+  .grade { text-align: center; }
+  .grade-value { font-size: 16px; font-weight: 700; }
+  .grade-label { font-size: 11px; color: #888; }
+  .grade-a { color: #40c060; }
+  .grade-b { color: #4a90d9; }
+  .grade-c { color: #ff8c00; }
+  .grade-d { color: #d94a4a; }
+
+  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+  .footer { text-align: center; padding: 32px; color: #444; font-size: 12px; border-top: 1px solid #1e2130; margin-top: 48px; }
+</style>
+</head>
+<body>
+
+<div class="header-bg">
+<header class="header">
+  <div style="display:flex;align-items:center;gap:24px;">
+    <a href="#" class="logo">롤체토스</a>
+    <nav class="nav">
+      <a href="#">덱</a>
+    </nav>
+  </div>
+  <div class="header-right">
+    <div class="header-search">
+      <input type="text" placeholder="소환사 닉네임#태그">
+      <button>검색</button>
+    </div>
+    <select class="lang-select">
+      <option>🇰🇷 KO</option>
+      <option>🇺🇸 EN</option>
+    </select>
+    <button class="user-btn">마이페이지</button>
+  </div>
+</header>
+</div>
+
+<div class="container">
+
+  <!-- User Info -->
+  <div class="user-card">
+    <div class="user-avatar">👤</div>
+    <div class="user-info">
+      <h2>사용자닉네임</h2>
+      <div class="user-email">user@email.com</div>
+    </div>
+    <div class="riot-link">
+      <span class="riot-linked">✓ Riot ID 연동됨 (Hide on bush#KR1)</span>
+      <!-- 미연동 시: <button class="riot-link-btn">Riot ID 연동</button> -->
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active">AI 분석 리포트</div>
+    <div class="tab">결제</div>
+    <div class="tab">설정</div>
+  </div>
+
+  <!-- Credits -->
+  <div class="credits-card">
+    <div class="credits-header">
+      <div>
+        <div class="credits-title">잔여 분석 횟수</div>
+        <div class="credits-label">회원가입 시 2회 무료 제공</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="credits-count">3</div>
+        <div class="credits-label">회 남음</div>
+      </div>
+    </div>
+    <div class="pricing">
+      <div class="price-card">
+        <div class="price-amount">1회</div>
+        <div class="price-value">₩500</div>
+        <div class="price-per">회당 ₩500</div>
+      </div>
+      <div class="price-card popular">
+        <div class="popular-badge">인기</div>
+        <div class="price-amount">5회</div>
+        <div class="price-value">₩2,000</div>
+        <div class="price-per">회당 ₩400</div>
+      </div>
+      <div class="price-card">
+        <div class="price-amount">15회</div>
+        <div class="price-value">₩5,000</div>
+        <div class="price-per">회당 ₩333</div>
+      </div>
+    </div>
+    <div class="subscribe-card">
+      <div class="subscribe-info">
+        <div class="sub-name">프리즘 티켓 (구독)</div>
+        <div class="sub-desc">AI 분석 리포트 무제한 · 하루 1회만 써도 이득</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="subscribe-price">₩9,900/월</div>
+        <button class="subscribe-btn">구독하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report List -->
+  <div class="section-title">분석 리포트 내역</div>
+  <div class="report-list">
+
+    <!-- Report 1 -->
+    <div class="report-card">
+      <div class="report-top">
+        <span class="report-placement rp1">1등</span>
+        <span class="report-deck">벌꿀 베이가</span>
+        <span class="report-date">2시간 전</span>
+      </div>
+      <div class="report-grades">
+        <div class="grade"><div class="grade-value grade-a">A</div><div class="grade-label">덱 선택</div></div>
+        <div class="grade"><div class="grade-value grade-b">B</div><div class="grade-label">아이템</div></div>
+        <div class="grade"><div class="grade-value grade-a">A</div><div class="grade-label">증강</div></div>
+        <div class="grade"><div class="grade-value grade-a">A</div><div class="grade-label">구성</div></div>
+      </div>
+      <div class="report-summary">
+        <strong>종합:</strong> 벌꿀 베이가 덱을 잘 운영했습니다. 다만 베이가 아이템을 대천사 대신 <strong>푸른 파수꾼</strong>으로 바꾸면 순방률이 4% 더 높았을 수 있습니다. 증강 선택은 최적이었습니다.
+      </div>
+    </div>
+
+    <!-- Report 2 -->
+    <div class="report-card">
+      <div class="report-top">
+        <span class="report-placement rp5">5등</span>
+        <span class="report-deck">전사 올라프</span>
+        <span class="report-date">6시간 전</span>
+      </div>
+      <div class="report-grades">
+        <div class="grade"><div class="grade-value grade-c">C</div><div class="grade-label">덱 선택</div></div>
+        <div class="grade"><div class="grade-value grade-d">D</div><div class="grade-label">아이템</div></div>
+        <div class="grade"><div class="grade-value grade-c">C</div><div class="grade-label">증강</div></div>
+        <div class="grade"><div class="grade-value grade-b">B</div><div class="grade-label">구성</div></div>
+      </div>
+      <div class="report-summary">
+        <strong>종합:</strong> 전사 올라프는 현 패치 평균 4.1등으로 메타에서 밀리는 덱입니다. 비슷한 시너지의 <strong>선봉대 가렌</strong>(평균 2.8등)이 더 나은 선택이었습니다. 아이템도 올라프에 <strong>피바라기</strong> 대신 방어 아이템을 줬는데, 상위권의 82%는 피바라기를 사용합니다. 남은 골드가 23이었는데 레벨업에 투자했어야 합니다.
+      </div>
+    </div>
+
+    <!-- Report 3 -->
+    <div class="report-card">
+      <div class="report-top">
+        <span class="report-placement rp3">3등</span>
+        <span class="report-deck">요정 카르마</span>
+        <span class="report-date">어제</span>
+      </div>
+      <div class="report-grades">
+        <div class="grade"><div class="grade-value grade-a">A</div><div class="grade-label">덱 선택</div></div>
+        <div class="grade"><div class="grade-value grade-a">A</div><div class="grade-label">아이템</div></div>
+        <div class="grade"><div class="grade-value grade-c">C</div><div class="grade-label">증강</div></div>
+        <div class="grade"><div class="grade-value grade-b">B</div><div class="grade-label">구성</div></div>
+      </div>
+      <div class="report-summary">
+        <strong>종합:</strong> 요정 카르마 덱 선택과 아이템은 좋았지만, 2차 증강에서 <strong>마나 흐름 대역</strong> 대신 이코노미 증강을 선택한 것이 아쉽습니다. 이 덱에서는 마나 증강이 순방률 15% 높습니다.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">롤체토스 · Riot Games가 보증하지 않음</footer>
+</body>
+</html>
