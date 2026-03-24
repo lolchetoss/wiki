@@ -4,82 +4,296 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>롤체토스 - 마이페이지 와이어프레임</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #0f1118; color: #e0e0e0; }
+  body { font-family: 'Pretendard', -apple-system, sans-serif; background: #0f1118; color: #c0c4cc; }
   .header-bg { background: #161923; border-bottom: 1px solid #2a2d3a; }
   .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; max-width: 1100px; margin: 0 auto; }
-  .logo { font-size: 20px; font-weight: 700; color: #7c5cfc; text-decoration: none; }
+  .logo { font-size: 20px; font-weight: 700; color: #5a73c8; text-decoration: none; }
   .nav { display: flex; gap: 24px; }
-  .nav a { color: #999; text-decoration: none; font-size: 14px; }
-  .nav a.active { color: #fff; }
+  .nav a { color: #c0c4cc; text-decoration: none; font-size: 14px; }
+  .nav a.active { color: #e0e0e0; }
   .header-right { display: flex; align-items: center; gap: 12px; }
-  .header-search { display: flex; align-items: center; }
-  .header-search input { padding: 7px 14px; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px 0 0 6px; color: #fff; font-size: 13px; width: 220px; outline: none; }
+  .header-search { display: flex; align-items: center; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; padding: 0 12px; gap: 8px; }
+  .header-search input { padding: 7px 0; background: transparent; border: none; color: #c0c4cc; font-size: 13px; width: 200px; outline: none; }
   .header-search input::placeholder { color: #555; }
-  .header-search button { padding: 7px 12px; background: #7c5cfc; border: none; border-radius: 0 6px 6px 0; color: #fff; font-size: 13px; cursor: pointer; }
-  .lang-select { background: #1e2130; border: 1px solid #2a2d3a; color: #e0e0e0; padding: 6px 12px; border-radius: 6px; font-size: 13px; }
-  .user-btn { padding: 6px 14px; background: #7c5cfc; border: none; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; }
-  .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+  .header-search .search-icon { color: #555; font-size: 22px; flex-shrink: 0; cursor: pointer; background: none; border: none; transform: scaleX(-1); }
+  .lang-select { background: #1e2130; border: 1px solid #2a2d3a; color: #c0c4cc; padding: 6px 12px; border-radius: 6px; font-size: 13px; }
+  .select { background: #1e2130; border: 1px solid #2a2d3a; color: #c0c4cc; padding: 6px 12px; border-radius: 6px; font-size: 13px; }
+  .profile-wrap { position: relative; }
+  .profile-icon-btn { width: 32px; height: 32px; border-radius: 50%; background: #2a2d3a; border: 1px solid #3a3d4a; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; color: #888; transition: border-color 0.2s; }
+  .profile-icon-btn:hover { border-color: #5a73c8; }
+  .profile-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 8px; min-width: 140px; padding: 6px 0; display: none; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .profile-wrap.open .profile-dropdown { display: block; }
+  .profile-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #c0c4cc; text-decoration: none; }
+  .profile-dropdown a:hover { background: #252836; }
+  .profile-dropdown .divider { height: 1px; background: #2a2d3a; margin: 4px 0; }
+  .profile-dropdown .logout { color: #c47272; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
 
-  /* User Info */
-  .user-card { background: #161923; border: 1px solid #2a2d3a; border-radius: 12px; padding: 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; }
-  .user-avatar { width: 56px; height: 56px; border-radius: 50%; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-  .user-info h2 { font-size: 18px; margin-bottom: 4px; }
-  .user-email { color: #888; font-size: 13px; }
-  .riot-link { margin-left: auto; }
-  .riot-link-btn { padding: 8px 16px; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; color: #999; font-size: 13px; cursor: pointer; }
-  .riot-linked { color: #40c060; font-size: 13px; }
+  /* User Profile */
+  .user-profile { background: #161923; border: 1px solid #2a2d3a; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .user-top { display: flex; align-items: flex-start; gap: 20px; }
+  .user-icon-wrap { position: relative; width: 120px; height: 96px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .user-icon { width: 72px; height: 72px; border-radius: 50%; background: #1a1a2e; border: 2px solid #5a4a3a; display: flex; align-items: center; justify-content: center; font-size: 28px; position: relative; z-index: 2; box-shadow: 0 0 12px rgba(90, 60, 180, 0.4); }
+  .user-wing { position: absolute; top: 50%; width: 36px; height: 60px; z-index: 1; }
+  .user-wing-left { left: 2px; transform: translateY(-50%) rotate(-15deg); background: linear-gradient(135deg, transparent 0%, #7b4fc8 30%, #a855f7 50%, #7b4fc8 70%, transparent 100%); clip-path: polygon(100% 20%, 60% 0%, 0% 30%, 10% 60%, 60% 100%, 100% 80%); }
+  .user-wing-right { right: 2px; transform: translateY(-50%) rotate(15deg); background: linear-gradient(225deg, transparent 0%, #7b4fc8 30%, #a855f7 50%, #7b4fc8 70%, transparent 100%); clip-path: polygon(0% 20%, 40% 0%, 100% 30%, 90% 60%, 40% 100%, 0% 80%); }
+  .user-info h2 { font-size: 20px; margin-bottom: 4px; }
+  .user-info .rank { font-size: 14px; display: flex; align-items: baseline; }
+  .rank-master { color: #9b59b6; }
+  .user-info .rank-detail { color: #888; font-size: 13px; }
+  .user-actions { margin-left: auto; display: flex; gap: 8px; }
+  .user-action-btn { width: 36px; height: 36px; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 8px; color: #888; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .user-action-btn:hover { border-color: #5a73c8; color: #c0c4cc; }
 
   /* Tabs */
   .tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid #2a2d3a; }
   .tab { padding: 12px 20px; font-size: 14px; color: #999; cursor: pointer; border-bottom: 2px solid transparent; }
-  .tab.active { color: #fff; border-bottom-color: #7c5cfc; }
+  .tab.active { color: #fff; border-bottom-color: #5a73c8; }
+  .tab-content { position: absolute; visibility: hidden; opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0.3s; width: 100%; }
+  .tab-content.active { position: relative; visibility: visible; opacity: 1; transform: translateY(0); transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0s; }
+
+  /* Stats Grid */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: #1a1d28; border-radius: 8px; padding: 14px; text-align: center; }
+  .stat-card .stat-value { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
+  .stat-card .stat-label { font-size: 12px; color: #888; }
+  .stat-card .stat-pct { font-size: 11px; color: #5a73c8; margin-top: 4px; }
+  .good { color: #6dbd7e; }
+
+  /* Player Tags */
+  .player-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .player-tag { padding: 6px 14px; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 20px; font-size: 13px; color: #c0c4cc; cursor: default; position: relative; }
+  .player-tag:hover { border-color: #5a73c8; }
+  .player-tag .tag-tip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #252836; border: 1px solid #2a2d3a; border-radius: 6px; padding: 8px 12px; font-size: 11px; color: #888; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10; }
+  .player-tag:hover .tag-tip { opacity: 1; }
+
+  /* Season Records + Radar */
+  .recent-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; align-items: stretch; }
+  .recent-section { background: #1a1d28; border-radius: 8px; padding: 14px; }
+  .recent-section.centered { display: flex; flex-direction: column; justify-content: center; }
+  .recent-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #c0c4cc; }
+  .record-list { display: flex; flex-direction: column; gap: 12px; flex: 1; justify-content: center; }
+  .record-item { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .record-icon { font-size: 16px; width: 24px; text-align: center; }
+  .record-name { color: #888; flex: 1; }
+  .record-val { font-weight: 700; font-size: 14px; }
+  .radar-chart { position: relative; display: flex; flex-direction: column; align-items: center; }
+  .radar-chart svg { width: 100%; max-width: 240px; }
+  .radar-chart text { font-size: 9px; fill: #888; text-anchor: middle; }
+  .radar-legend { display: flex; gap: 16px; justify-content: center; margin-top: 8px; font-size: 12px; color: #888; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-box { width: 12px; height: 12px; border-radius: 2px; }
+
+  /* Charts */
+  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .chart-box { background: #1a1d28; border-radius: 8px; padding: 14px; }
+  .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 12px; color: #c0c4cc; }
+  .lp-chart { height: 200px; position: relative; border-radius: 4px; margin-bottom: 20px; }
+  .lp-chart svg { width: 100%; height: 100%; }
+  .lp-dot { cursor: pointer; transition: r 0.15s; }
+  .lp-dot:hover { r: 3.5; }
+  .lp-tooltip { position: absolute; background: #252836; border: 1px solid #2a2d3a; border-radius: 6px; padding: 6px 10px; font-size: 11px; color: #c0c4cc; pointer-events: none; display: none; white-space: nowrap; z-index: 10; }
+  .lp-tooltip .tt-lp { font-weight: 700; color: #9b59b6; }
+  .lp-x-axis { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-top: 4px; padding: 0 4px; position: absolute; bottom: -16px; left: 0; right: 0; }
+  .placement-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+  .placement-cell { width: 100%; aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .p-1st { background: #2a2a1a; color: #d4b254; }
+  .p-top { background: #1a2226; color: #8ab8c4; }
+  .p-mid { background: #222; color: #777; }
+  .p-8th { background: #2a1e1e; color: #c47272; }
+  .rank-dist-bar { display: flex; align-items: flex-end; gap: 6px; height: 100px; padding: 0 4px; }
+  .rank-dist-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .rank-dist-col .bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 0.6s ease; }
+  .rank-dist-col .bar-count { font-size: 10px; color: #888; }
+  .rank-dist-col .bar-rank { font-size: 10px; color: #555; }
+
+  /* Match History */
+  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+  .match-list { display: flex; flex-direction: column; gap: 6px; }
+  .match-card { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px; background: #161923; border: 1px solid #2a2d3a; border-radius: 8px; padding: 12px 8px 12px 6px; cursor: pointer; transition: border-color 0.2s; position: relative; border-left: 3px solid; }
+  .match-content { min-width: 0; }
+  .match-card:hover { border-top-color: #5a73c8; border-right-color: #5a73c8; border-bottom-color: #5a73c8; }
+  .match-card.open:hover { border-bottom-color: transparent; }
+  .match-card.open:hover + .match-detail { border-color: #5a73c8; }
+  .match-legend-right { position: relative; padding-left: 18px; border-left: 1px solid #2a2d3a; margin-left: 6px; padding-right: 6px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .match-legend-icon-wrap { position: relative; }
+  .match-legend-right .legend-icon { width: 40px; height: 40px; border-radius: 50%; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid #3a3d4a; }
+  .match-legend-right .legend-lv { position: absolute; bottom: -2px; right: -2px; width: 16px; height: 16px; border-radius: 3px; background: #252836; border: 1px solid #3a3d4a; font-size: 9px; font-weight: 700; color: #c0c4cc; display: flex; align-items: center; justify-content: center; }
+  .match-synergies { display: flex; gap: 4px; font-size: 12px; color: #888; flex-wrap: wrap; }
+  .match-synergy { padding: 3px 8px; background: #252836; border-radius: 4px; }
+  .champ-star { font-size: 9px; color: #d4b254; text-align: center; line-height: 1; margin-bottom: -6px; position: relative; z-index: 1; }
+  .match-tags { display: flex; gap: 4px; }
+  .match-legend-right .match-tags { flex-direction: column; gap: 3px; align-items: center; }
+  .match-legend-right .match-tag { font-size: 10px; padding: 2px 6px; text-align: center; white-space: nowrap; }
+  .match-tag { padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; position: relative; cursor: default; }
+  .match-tag-kill { background: #2a1a1e; color: #e05555; }
+  .match-tag-star { background: #2a2a1a; color: #d4b254; }
+  .match-tag-value { background: #221a2e; color: #a87bd4; }
+  .match-tag-econ { background: #1a2a24; color: #6dbd7e; }
+  .match-tag-bleed { background: #2a1a1a; color: #c47272; }
+  .match-tag-honey { background: #2e2818; color: #d4a030; }
+  .match-tag-disaster { background: #2e1520; color: #e04080; }
+  .match-tag-god { background: #2a2510; color: #f0d060; }
+  .match-tag .tag-tip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #252836; border: 1px solid #2a2d3a; border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 400; color: #888; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10; }
+  .match-tag:hover .tag-tip { opacity: 1; }
+  .match-expand { color: #555; font-size: 12px; transition: transform 0.3s; justify-self: center; }
+  .match-card.open .match-expand { transform: rotate(180deg); }
+  .match-card.open { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  .match-left { display: flex; align-items: center; gap: 8px; }
+  .match-left-placement { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 36px; }
+  .placement { font-size: 22px; font-weight: 700; text-align: center; line-height: 1; }
+  .match-left-info { display: flex; flex-direction: column; font-size: 12px; }
+  .match-lp { font-size: 11px; font-weight: 600; margin-top: 2px; }
+  .match-mode { font-size: 11px; color: #888; }
+  .match-time-ago { font-size: 10px; color: #555; margin-top: 1px; }
+  .p1 { color: #d4b254; }
+  .p2 { color: #a0c8d4; }
+  .p3 { color: #8ab8c4; }
+  .p4 { color: #74a8b4; }
+  .p5 { color: #777; }
+  .p6 { color: #777; }
+  .p7 { color: #777; }
+  .p8 { color: #c47272; }
+  .match-champs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .match-champ-wrap { display: flex; flex-direction: column; align-items: center; }
+  .match-champ { width: 36px; height: 36px; border-radius: 5px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #666; }
+  .match-champ-items { display: flex; gap: 1px; margin-top: -6px; position: relative; z-index: 1; height: 10px; }
+  .match-champ-items-empty { height: 4px; }
+  .match-item-dot { width: 11px; height: 11px; border-radius: 2px; background: #3a3520; border: 1px solid #555; }
+  .analyze-btn { padding: 5px 10px; background: #5a73c8; border: none; border-radius: 4px; color: #fff; font-size: 11px; cursor: pointer; white-space: nowrap; }
+  .match-actions { display: flex; gap: 6px; align-items: center; justify-self: end; }
+  .match-quick-btns { position: absolute; top: 4px; right: 4px; display: flex; gap: 2px; z-index: 2; }
+  .match-quick-btn { width: 22px; height: 22px; background: transparent; border: none; border-radius: 3px; color: #555; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
+  .match-quick-btn:hover { color: #c0c4cc; background: #252836; }
+  .match-quick-btn::after { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: #252836; border: 1px solid #2a2d3a; color: #c0c4cc; font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10; }
+  .match-quick-btn:hover::after { opacity: 1; }
+  .match-quick-btn.copy-team::after { content: '팀 코드 복사'; }
+  .match-quick-btn.copy-link::after { content: '매치 링크 복사'; }
+  .match-quick-btn.copied::after { content: '복사되었습니다!' !important; background: #5a73c8 !important; border-color: #5a73c8 !important; opacity: 1 !important; }
+
+  /* Match Detail */
+  .match-detail { max-height: 0; overflow: hidden; background: #0f1118; border: 1px solid #2a2d3a; border-top: none; border-radius: 0 0 8px 8px; margin-top: -7px; transition: max-height 0.3s ease-out, padding 0.3s ease-out; padding: 0 16px; }
+  .match-card.open + .match-detail { max-height: 900px; overflow: visible; padding: 16px; border-top: 1px solid #2a2d3a; }
+  .detail-header { display: flex; align-items: center; gap: 8px; padding-bottom: 10px; margin-bottom: 6px; border-bottom: 1px solid #1e2130; font-size: 12px; color: #888; }
+  .detail-header-label { font-weight: 600; color: #c0c4cc; margin-right: 4px; }
+  .detail-avg-tier { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+  .detail-avg-tier span { color: #9b59b6; font-weight: 600; }
+  .participant { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #1e2130; font-size: 13px; }
+  .participant:last-child { border-bottom: none; }
+  .participant.highlight { background: #1a1a2e; margin: 0 -16px; padding: 10px 16px; border-radius: 4px; }
+  .part-rank { width: 28px; font-size: 16px; font-weight: 700; text-align: center; flex-shrink: 0; }
+  .part-legend-wrap { position: relative; flex-shrink: 0; margin-right: 4px; }
+  .part-legend { width: 36px; height: 36px; border-radius: 50%; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 16px; border: 2px solid #3a3d4a; }
+  .part-lv { position: absolute; bottom: -2px; right: -2px; width: 16px; height: 16px; border-radius: 3px; background: #252836; border: 1px solid #3a3d4a; font-size: 9px; font-weight: 700; color: #c0c4cc; display: flex; align-items: center; justify-content: center; }
+  .part-info { display: flex; flex-direction: column; flex-shrink: 0; min-width: 110px; }
+  .part-name { cursor: pointer; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2; }
+  .part-name:hover { color: #5a73c8; }
+  .part-tier { font-size: 11px; color: #888; line-height: 1.2; margin-top: 2px; }
+  .part-death { font-size: 10px; color: #555; line-height: 1.2; margin-top: 1px; }
+  .part-stats { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; min-width: 70px; }
+  .part-stat-icon { font-size: 13px; width: 18px; text-align: center; flex-shrink: 0; color: #888; }
+  .part-stat { display: flex; align-items: center; gap: 4px; font-size: 12px; position: relative; cursor: default; }
+  .part-stat::after { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: #252836; border: 1px solid #2a2d3a; color: #c0c4cc; font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10; }
+  .part-stat:hover::after { opacity: 1; }
+  .part-stat.stat-dmg::after { content: '입힌 피해량'; }
+  .part-stat.stat-gold::after { content: '팀 가치'; }
+  .part-stat-val { font-size: 12px; color: #c0c4cc; font-weight: 600; min-width: 28px; text-align: left; }
+  .part-champs { display: flex; gap: 3px; }
+  .part-champ-wrap { display: flex; flex-direction: column; align-items: center; }
+  .part-champ { width: 36px; height: 36px; border-radius: 5px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #666; }
+  .part-star { font-size: 9px; color: #d4b254; text-align: center; line-height: 1; margin-bottom: -6px; position: relative; z-index: 1; }
+  .part-comp { display: flex; flex-direction: column; gap: 3px; margin-left: -8px; }
+  .part-synergies { display: flex; gap: 4px; font-size: 11px; color: #888; flex-wrap: wrap; }
+  .part-synergies .match-synergy { padding: 2px 6px; font-size: 11px; }
+  .part-team-copy { padding: 4px 8px; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 4px; color: #888; font-size: 11px; cursor: pointer; flex-shrink: 0; white-space: nowrap; position: relative; margin-left: auto; }
+  .part-team-copy:hover { border-color: #5a73c8; color: #c0c4cc; }
+  .part-team-copy::after { content: '팀 코드 복사'; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #252836; border: 1px solid #2a2d3a; color: #c0c4cc; font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10; }
+  .part-team-copy:hover::after { opacity: 1; }
+  .part-team-copy.copied::after { content: '복사되었습니다!' !important; background: #5a73c8 !important; border-color: #5a73c8 !important; opacity: 1 !important; }
 
   /* Credits */
   .credits-card { background: #161923; border: 1px solid #2a2d3a; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
   .credits-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
   .credits-title { font-size: 16px; font-weight: 600; }
-  .credits-count { font-size: 28px; font-weight: 700; color: #7c5cfc; }
+  .credits-count { font-size: 28px; font-weight: 700; color: #5a73c8; }
   .credits-label { font-size: 13px; color: #888; }
   .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
   .price-card { background: #1a1d28; border: 1px solid #2a2d3a; border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
-  .price-card:hover { border-color: #7c5cfc; }
-  .price-card.popular { border-color: #7c5cfc; position: relative; }
-  .popular-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #7c5cfc; color: #fff; font-size: 11px; padding: 2px 10px; border-radius: 10px; }
+  .price-card:hover { border-color: #5a73c8; }
+  .price-card.popular { border-color: #5a73c8; position: relative; }
+  .popular-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #5a73c8; color: #fff; font-size: 11px; padding: 2px 10px; border-radius: 10px; }
   .price-amount { font-size: 13px; color: #888; margin-bottom: 4px; }
   .price-value { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
   .price-per { font-size: 11px; color: #666; }
-  .subscribe-card { background: #1a1d28; border: 1px solid #7c5cfc; border-radius: 8px; padding: 16px; margin-top: 12px; display: flex; align-items: center; justify-content: space-between; }
-  .subscribe-info .sub-name { font-size: 15px; font-weight: 600; color: #7c5cfc; }
+  .subscribe-card { background: #1a1d28; border: 1px solid #5a73c8; border-radius: 8px; padding: 16px; margin-top: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .subscribe-info .sub-name { font-size: 15px; font-weight: 600; color: #5a73c8; }
   .subscribe-info .sub-desc { font-size: 13px; color: #888; margin-top: 2px; }
   .subscribe-price { font-size: 18px; font-weight: 700; }
-  .subscribe-btn { padding: 8px 20px; background: #7c5cfc; border: none; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; }
+  .subscribe-btn { padding: 8px 20px; background: #5a73c8; border: none; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; }
 
   /* Report List */
-  .report-list { display: flex; flex-direction: column; gap: 8px; }
-  .report-card { background: #161923; border: 1px solid #2a2d3a; border-radius: 8px; padding: 16px; cursor: pointer; transition: border-color 0.2s; }
-  .report-card:hover { border-color: #7c5cfc; }
-  .report-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-  .report-placement { font-size: 18px; font-weight: 700; width: 32px; text-align: center; }
+  .report-list { display: flex; flex-direction: column; gap: 6px; }
+  .report-card { display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 8px 14px; text-decoration: none; color: inherit; background: #161923; border: 1px solid #2a2d3a; border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: border-color 0.2s; border-left: 3px solid; position: relative; }
+  .report-card:hover { border-top-color: #5a73c8; border-right-color: #5a73c8; border-bottom-color: #5a73c8; }
+  .report-left { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; }
+  .report-placement { font-size: 20px; font-weight: 700; text-align: center; line-height: 1; }
+  .report-mode { font-size: 11px; color: #888; margin-top: 3px; }
+  .report-time { font-size: 10px; color: #555; margin-top: 1px; }
   .rp1 { color: #f0c040; }
-  .rp3 { color: #cd7f32; }
-  .rp5 { color: #d94a4a; }
-  .report-deck { font-size: 14px; font-weight: 600; }
-  .report-date { margin-left: auto; font-size: 12px; color: #666; }
-  .report-summary { font-size: 13px; color: #999; line-height: 1.6; padding: 12px; background: #1a1d28; border-radius: 6px; }
-  .report-summary strong { color: #e0e0e0; }
-  .report-grades { display: flex; gap: 12px; margin-top: 10px; }
-  .grade { text-align: center; }
-  .grade-value { font-size: 16px; font-weight: 700; }
-  .grade-label { font-size: 11px; color: #888; }
-  .grade-a { color: #40c060; }
-  .grade-b { color: #4a90d9; }
-  .grade-c { color: #ff8c00; }
-  .grade-d { color: #d94a4a; }
+  .rp3 { color: #8ab8c4; }
+  .rp5 { color: #c47272; }
+  .report-content { display: flex; flex-direction: column; min-width: 0; }
+  .report-summary { font-size: 12px; color: #888; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .report-champs { display: flex; gap: 3px; flex-wrap: wrap; }
+  .report-champ-wrap { display: flex; flex-direction: column; align-items: center; }
+  .report-champ { width: 32px; height: 32px; border-radius: 4px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #666; }
+  .report-star { font-size: 8px; color: #d4b254; text-align: center; line-height: 1; margin-bottom: -5px; position: relative; z-index: 1; }
+  .report-champ-items { display: flex; gap: 1px; margin-top: -5px; position: relative; z-index: 1; height: 9px; }
+  .report-item-dot { width: 10px; height: 10px; border-radius: 2px; background: #3a3520; border: 1px solid #555; }
+  .report-champ-items-empty { height: 4px; }
+  .report-grades { display: flex; gap: 24px; margin-right: 60px; align-self: center; }
+  .grade { display: flex; flex-direction: column; align-items: center; text-align: center; width: 36px; }
+  .grade-val { font-weight: 700; font-size: 28px; line-height: 1; }
+  .grade-label { color: #888; font-size: 11px; margin-top: 4px; }
+  .grade-s .grade-val { color: #c4444f; }
+  .grade-a .grade-val { color: #6dbd7e; }
+  .grade-b .grade-val { color: #5a73c8; }
+  .grade-c .grade-val { color: #ff8c00; }
+  .report-quick-btns { position: absolute; top: 6px; right: 6px; display: flex; gap: 2px; z-index: 2; }
+  .report-quick-btn { width: 22px; height: 22px; background: transparent; border: none; border-radius: 3px; color: #555; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
+  .report-quick-btn:hover { color: #c0c4cc; background: #252836; }
+  .report-quick-btn::after { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: #252836; border: 1px solid #2a2d3a; color: #c0c4cc; font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10; }
+  .report-quick-btn:hover::after { opacity: 1; }
+  .report-quick-btn.copy-team::after { content: '팀 코드 복사'; }
+  .report-quick-btn.copy-link::after { content: '매치 링크 복사'; }
+  .report-quick-btn.copied::after { content: '복사되었습니다!' !important; background: #5a73c8 !important; border-color: #5a73c8 !important; opacity: 1 !important; }
 
-  .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
   .footer { text-align: center; padding: 32px; color: #444; font-size: 12px; border-top: 1px solid #1e2130; margin-top: 48px; }
+
+  @media (max-width: 767px) {
+    .header-right .header-search { display: none; }
+    .header-right .lang-select { display: none; }
+    .nav { display: none; }
+    .header { padding: 12px 16px; }
+    .container { padding: 16px; }
+    .user-top { flex-direction: column; align-items: center; text-align: center; }
+    .user-actions { margin-left: 0; }
+    .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts { grid-template-columns: 1fr; }
+    .recent-stats { grid-template-columns: 1fr; }
+    .pricing { grid-template-columns: 1fr; }
+    .subscribe-card { flex-direction: column; gap: 12px; text-align: center; }
+    .report-grades { gap: 12px; margin-right: 30px; }
+    .match-champs { flex-wrap: wrap; }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .pricing { grid-template-columns: repeat(2, 1fr); }
+  }
 </style>
 </head>
 <body>
@@ -87,150 +301,511 @@
 <div class="header-bg">
 <header class="header">
   <div style="display:flex;align-items:center;gap:24px;">
-    <a href="#" class="logo">롤체토스</a>
+    <a href="#" class="logo" style="text-decoration:none;"><span style="display:inline-block;width:32px;height:32px;background:#2a2d3a;border-radius:6px;vertical-align:middle;margin-right:4px;text-align:center;line-height:32px;font-size:14px;color:#5a73c8;">🎲</span></a>
     <nav class="nav">
       <a href="#">덱</a>
     </nav>
   </div>
   <div class="header-right">
     <div class="header-search">
-      <input type="text" placeholder="소환사 닉네임#태그">
-      <button>검색</button>
+      <input type="text" placeholder="플레이어#태그로 전적 검색">
+      <button class="search-icon">⌕</button>
     </div>
     <select class="lang-select">
-      <option>🇰🇷 KO</option>
-      <option>🇺🇸 EN</option>
+      <option>🇰🇷&ensp;KO</option>
+      <option>🇺🇸&ensp;EN</option>
     </select>
-    <button class="user-btn">마이페이지</button>
+    <div class="profile-wrap">
+      <button class="profile-icon-btn" onclick="this.parentElement.classList.toggle('open')">🐧</button>
+      <div class="profile-dropdown">
+        <a href="#">마이페이지</a>
+        <div class="divider"></div>
+        <a href="#" class="logout">로그아웃</a>
+      </div>
+    </div>
   </div>
 </header>
 </div>
 
 <div class="container">
 
-  <!-- User Info -->
-  <div class="user-card">
-    <div class="user-avatar">👤</div>
-    <div class="user-info">
-      <h2>사용자닉네임</h2>
-      <div class="user-email">user@email.com</div>
-    </div>
-    <div class="riot-link">
-      <span class="riot-linked">✓ Riot ID 연동됨 (Hide on bush#KR1)</span>
+  <!-- User Profile -->
+  <div class="user-profile">
+    <div class="user-top">
+      <div class="user-icon-wrap">
+        <div class="user-wing user-wing-left"></div>
+        <div class="user-icon">🐧</div>
+        <div class="user-wing user-wing-right"></div>
+      </div>
+      <div class="user-info">
+        <h2>Hide on bush <span style="color:#555;font-weight:400;font-size:14px;">#KR1</span></h2>
+        <div class="rank"><span class="rank-master">Master 351 LP</span> <span style="color:#333; margin:0 6px;">|</span> <span class="rank-detail">상위 0.21% · 2,890위</span></div>
+        <div class="player-tags" style="margin-top:8px;margin-bottom:0;">
+          <span class="player-tag">🔋 후반 전문가<span class="tag-tip">최근 20게임 평균 레벨 8.5 이상</span></span>
+          <span class="player-tag">🍗 치킨 수집가<span class="tag-tip">최근 20게임 1등 확률 20% 이상</span></span>
+          <span class="player-tag">🛡️ 안전 운전<span class="tag-tip">최근 20게임 순방률 70% 이상</span></span>
+          <span class="player-tag">🍯 벌꿀 애호가<span class="tag-tip">최근 20게임 중 벌꿀 베이가 6회 사용</span></span>
+        </div>
+      </div>
       <!-- 미연동 시: <button class="riot-link-btn">Riot ID 연동</button> -->
+      <!-- 연동 완료 상태이므로 버튼 없음 -->
     </div>
   </div>
 
   <!-- Tabs -->
   <div class="tabs">
-    <div class="tab active">AI 분석 리포트</div>
-    <div class="tab">결제</div>
-    <div class="tab">설정</div>
+    <div class="tab active" data-tab="history">전적</div>
+    <div class="tab" data-tab="report">AI 분석 리포트</div>
+    <div class="tab" data-tab="payment">결제</div>
+    <div class="tab" data-tab="settings">설정</div>
   </div>
 
-  <!-- Credits -->
-  <div class="credits-card">
-    <div class="credits-header">
-      <div>
-        <div class="credits-title">잔여 분석 횟수</div>
-        <div class="credits-label">회원가입 시 2회 무료 제공</div>
+  <!-- Tab: 전적 -->
+  <div class="tab-content active" id="tab-history">
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-value good">42</div><div class="stat-label">1등 횟수</div><div class="stat-pct">상위 12.3%</div></div>
+      <div class="stat-card"><div class="stat-value good">63.2%</div><div class="stat-label">순방 확률</div><div class="stat-pct">상위 8.1%</div></div>
+      <div class="stat-card"><div class="stat-value">250</div><div class="stat-label">게임 수</div><div class="stat-pct">상위 22.4%</div></div>
+      <div class="stat-card"><div class="stat-value good">3.54</div><div class="stat-label">평균 등수</div><div class="stat-pct">상위 16.6%</div></div>
+    </div>
+
+    <!-- Season Records + Radar -->
+    <div class="recent-stats">
+      <div class="recent-section" style="display:flex;flex-direction:column;">
+        <div class="recent-title">시즌 기록</div>
+        <div class="record-list">
+          <div class="record-item"><span class="record-icon">📈</span><span class="record-name">최고 LP</span><span class="record-val rank-master">Master 412 LP</span></div>
+          <div class="record-item"><span class="record-icon">📉</span><span class="record-name">최저 LP</span><span class="record-val" style="color:#c47272;">Diamond IV 0 LP</span></div>
+          <div class="record-item"><span class="record-icon">🔥</span><span class="record-name">최다 연승</span><span class="record-val good">7연승</span></div>
+          <div class="record-item"><span class="record-icon">🥶</span><span class="record-name">최다 연패</span><span class="record-val" style="color:#c47272;">5연패</span></div>
+          <div class="record-item"><span class="record-icon">🚀</span><span class="record-name">하루 최대 LP 획득</span><span class="record-val good">+128 LP</span></div>
+          <div class="record-item"><span class="record-icon">💀</span><span class="record-name">하루 최대 LP 손실</span><span class="record-val" style="color:#c47272;">-96 LP</span></div>
+          <div class="record-item"><span class="record-icon">🍗</span><span class="record-name">최다 연속 1등</span><span class="record-val good">3연속</span></div>
+          <div class="record-item"><span class="record-icon">🎮</span><span class="record-name">하루 최다 게임</span><span class="record-val">14게임</span></div>
+        </div>
       </div>
-      <div style="text-align:right;">
-        <div class="credits-count">3</div>
-        <div class="credits-label">회 남음</div>
+      <div class="recent-section centered">
+        <div class="recent-title">플레이어 분석</div>
+        <div class="radar-chart">
+          <svg viewBox="0 0 500 500">
+            <circle cx="250" cy="240" r="130" fill="none" stroke="#2a2d3a" stroke-width="0.8"/>
+            <circle cx="250" cy="240" r="87" fill="none" stroke="#2a2d3a" stroke-width="0.5"/>
+            <circle cx="250" cy="240" r="43" fill="none" stroke="#2a2d3a" stroke-width="0.5"/>
+            <line x1="250" y1="240" x2="250" y2="110" stroke="#2a2d3a" stroke-width="0.5"/>
+            <line x1="250" y1="240" x2="374" y2="197" stroke="#2a2d3a" stroke-width="0.5"/>
+            <line x1="250" y1="240" x2="327" y2="345" stroke="#2a2d3a" stroke-width="0.5"/>
+            <line x1="250" y1="240" x2="173" y2="345" stroke="#2a2d3a" stroke-width="0.5"/>
+            <line x1="250" y1="240" x2="126" y2="197" stroke="#2a2d3a" stroke-width="0.5"/>
+            <polygon points="250,185 303,211 283,296 217,296 197,211" fill="#555" fill-opacity="0.15" stroke="#555" stroke-width="1.2"/>
+            <polygon points="250,240 250,240 250,240 250,240 250,240" fill="#5a73c8" fill-opacity="0.15" stroke="#5a73c8" stroke-width="2">
+              <animate attributeName="points" from="250,240 250,240 250,240 250,240 250,240" to="250,115 368,200 310,340 178,335 135,205" dur="0.8s" fill="freeze" calcMode="spline" keySplines="0.25 0.1 0.25 1"/>
+            </polygon>
+            <circle cx="250" cy="115" r="5" fill="#5a73c8" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="0.6s" fill="freeze"/></circle>
+            <circle cx="368" cy="200" r="5" fill="#5a73c8" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="0.7s" fill="freeze"/></circle>
+            <circle cx="310" cy="340" r="5" fill="#5a73c8" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="0.8s" fill="freeze"/></circle>
+            <circle cx="178" cy="335" r="5" fill="#5a73c8" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="0.9s" fill="freeze"/></circle>
+            <circle cx="135" cy="205" r="5" fill="#5a73c8" opacity="0"><animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="1.0s" fill="freeze"/></circle>
+            <text x="250" y="68" font-size="40" fill="#c4444f" font-weight="700" text-anchor="middle">S</text>
+            <text x="250" y="95" font-size="22" fill="#888" text-anchor="middle">1등 확률</text>
+            <text x="418" y="190" font-size="40" fill="#6dbd7e" font-weight="700" text-anchor="middle">A</text>
+            <text x="418" y="217" font-size="22" fill="#888" text-anchor="middle">순방 확률</text>
+            <text x="365" y="395" font-size="40" fill="#5a73c8" font-weight="700" text-anchor="middle">B</text>
+            <text x="365" y="422" font-size="22" fill="#888" text-anchor="middle">골드 관리</text>
+            <text x="135" y="395" font-size="40" fill="#6dbd7e" font-weight="700" text-anchor="middle">A</text>
+            <text x="135" y="422" font-size="22" fill="#888" text-anchor="middle">유연함</text>
+            <text x="82" y="190" font-size="40" fill="#5a73c8" font-weight="700" text-anchor="middle">B</text>
+            <text x="82" y="217" font-size="22" fill="#888" text-anchor="middle">평정심</text>
+          </svg>
+          <div class="radar-legend">
+            <span class="legend-item"><span class="legend-box" style="background:#5a73c8;"></span>Hide on bush</span>
+            <span class="legend-item"><span class="legend-box" style="background:#555;"></span>Master 평균</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="pricing">
-      <div class="price-card">
-        <div class="price-amount">1회</div>
-        <div class="price-value">₩500</div>
-        <div class="price-per">회당 ₩500</div>
+
+    <!-- Charts -->
+    <div class="charts">
+      <div class="chart-box">
+        <div class="chart-title">LP 추이</div>
+        <div class="lp-chart">
+          <svg viewBox="0 0 300 140" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="lpLine" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#4a7bb5"/>
+                <stop offset="60%" stop-color="#4a7bb5"/>
+                <stop offset="65%" stop-color="#9b59b6"/>
+                <stop offset="100%" stop-color="#9b59b6"/>
+              </linearGradient>
+              <linearGradient id="lpFill" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#4a7bb5"/>
+                <stop offset="60%" stop-color="#4a7bb5"/>
+                <stop offset="65%" stop-color="#9b59b6"/>
+                <stop offset="100%" stop-color="#9b59b6"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="50" x2="300" y2="50" stroke="#2a2d3a" stroke-width="1" stroke-dasharray="4,4"/>
+            <text x="4" y="47" fill="#555" font-size="8">Master</text>
+            <text x="4" y="97" fill="#555" font-size="8">Diamond I</text>
+            <path d="M0,105 L20,100 40,102 60,95 80,88 100,90 120,80 140,82 160,70 180,60 200,55 220,45 240,48 260,38 280,32 300,28" fill="none" stroke="url(#lpLine)" stroke-width="1.5" stroke-dasharray="600" stroke-dashoffset="600">
+              <animate attributeName="stroke-dashoffset" from="600" to="0" dur="1.2s" fill="freeze" easing="ease-out"/>
+            </path>
+            <path d="M0,105 L20,100 40,102 60,95 80,88 100,90 120,80 140,82 160,70 180,60 200,55 220,45 240,48 260,38 280,32 300,28 L300,140 L0,140 Z" fill="url(#lpFill)" opacity="0">
+              <animate attributeName="opacity" from="0" to="0.15" dur="0.8s" begin="0.6s" fill="freeze"/>
+            </path>
+            <circle class="lp-dot" cx="0" cy="105" r="2" fill="#4a7bb5" data-lp="D1 24LP" data-date="3/8"/>
+            <circle class="lp-dot" cx="20" cy="100" r="2" fill="#4a7bb5" data-lp="D1 38LP" data-date="3/9"/>
+            <circle class="lp-dot" cx="40" cy="102" r="2" fill="#4a7bb5" data-lp="D1 32LP" data-date="3/10"/>
+            <circle class="lp-dot" cx="60" cy="95" r="2" fill="#4a7bb5" data-lp="D1 52LP" data-date="3/11"/>
+            <circle class="lp-dot" cx="80" cy="88" r="2" fill="#4a7bb5" data-lp="D1 68LP" data-date="3/12"/>
+            <circle class="lp-dot" cx="100" cy="90" r="2" fill="#4a7bb5" data-lp="D1 62LP" data-date="3/12"/>
+            <circle class="lp-dot" cx="120" cy="80" r="2" fill="#4a7bb5" data-lp="D1 85LP" data-date="3/13"/>
+            <circle class="lp-dot" cx="140" cy="82" r="2" fill="#4a7bb5" data-lp="D1 80LP" data-date="3/14"/>
+            <circle class="lp-dot" cx="160" cy="70" r="2" fill="#4a7bb5" data-lp="D1 95LP" data-date="3/15"/>
+            <circle class="lp-dot" cx="180" cy="60" r="2" fill="#9b59b6" data-lp="M 12LP" data-date="3/16"/>
+            <circle class="lp-dot" cx="200" cy="55" r="2" fill="#9b59b6" data-lp="M 48LP" data-date="3/17"/>
+            <circle class="lp-dot" cx="220" cy="45" r="2" fill="#9b59b6" data-lp="M 120LP" data-date="3/18"/>
+            <circle class="lp-dot" cx="240" cy="48" r="2" fill="#9b59b6" data-lp="M 98LP" data-date="3/19"/>
+            <circle class="lp-dot" cx="260" cy="38" r="2" fill="#9b59b6" data-lp="M 210LP" data-date="3/20"/>
+            <circle class="lp-dot" cx="280" cy="32" r="2" fill="#9b59b6" data-lp="M 265LP" data-date="3/21"/>
+            <circle class="lp-dot" cx="300" cy="28" r="3" fill="#9b59b6" stroke="#fff" stroke-width="1" data-lp="M 309LP" data-date="3/23"/>
+          </svg>
+          <div class="lp-tooltip" id="lpTooltip"></div>
+          <div class="lp-x-axis">
+            <span>3/8</span><span>3/12</span><span>3/16</span><span>3/20</span><span>3/23</span>
+          </div>
+        </div>
       </div>
-      <div class="price-card popular">
-        <div class="popular-badge">인기</div>
-        <div class="price-amount">5회</div>
-        <div class="price-value">₩2,000</div>
-        <div class="price-per">회당 ₩400</div>
-      </div>
-      <div class="price-card">
-        <div class="price-amount">15회</div>
-        <div class="price-value">₩5,000</div>
-        <div class="price-per">회당 ₩333</div>
+      <div class="chart-box">
+        <div class="chart-title" style="display:flex;justify-content:space-between;align-items:baseline;">최근 20게임 등수 <span style="font-size:12px;font-weight:400;color:#888;">평균 <span class="good" style="font-weight:700;">3.2등</span> · 순방 <span class="good" style="font-weight:700;">14회</span></span></div>
+        <div class="placement-grid">
+          <div class="placement-cell p-1st">1</div><div class="placement-cell p-top">3</div><div class="placement-cell p-mid">5</div><div class="placement-cell p-top">2</div><div class="placement-cell p-top">4</div>
+          <div class="placement-cell p-1st">1</div><div class="placement-cell p-mid">6</div><div class="placement-cell p-top">3</div><div class="placement-cell p-top">2</div><div class="placement-cell p-mid">7</div>
+          <div class="placement-cell p-1st">1</div><div class="placement-cell p-top">4</div><div class="placement-cell p-top">3</div><div class="placement-cell p-mid">5</div><div class="placement-cell p-top">2</div>
+          <div class="placement-cell p-1st">1</div><div class="placement-cell p-top">3</div><div class="placement-cell p-8th">8</div><div class="placement-cell p-top">2</div><div class="placement-cell p-top">4</div>
+        </div>
+        <div class="rank-dist-bar" style="margin-top:28px;">
+          <div class="rank-dist-col"><div class="bar-count">4</div><div class="bar" data-count="4" style="background:#d4b254;"></div><div class="bar-rank">1st</div></div>
+          <div class="rank-dist-col"><div class="bar-count">5</div><div class="bar" data-count="5" style="background:#8ab8c4;"></div><div class="bar-rank">2nd</div></div>
+          <div class="rank-dist-col"><div class="bar-count">4</div><div class="bar" data-count="4" style="background:#8ab8c4;"></div><div class="bar-rank">3rd</div></div>
+          <div class="rank-dist-col"><div class="bar-count">3</div><div class="bar" data-count="3" style="background:#8ab8c4;"></div><div class="bar-rank">4th</div></div>
+          <div class="rank-dist-col"><div class="bar-count">2</div><div class="bar" data-count="2" style="background:#777;"></div><div class="bar-rank">5th</div></div>
+          <div class="rank-dist-col"><div class="bar-count">1</div><div class="bar" data-count="1" style="background:#777;"></div><div class="bar-rank">6th</div></div>
+          <div class="rank-dist-col"><div class="bar-count">1</div><div class="bar" data-count="1" style="background:#777;"></div><div class="bar-rank">7th</div></div>
+          <div class="rank-dist-col"><div class="bar-count">1</div><div class="bar" data-count="1" style="background:#c47272;"></div><div class="bar-rank">8th</div></div>
+        </div>
       </div>
     </div>
-    <div class="subscribe-card">
-      <div class="subscribe-info">
-        <div class="sub-name">프리즘 티켓 (구독)</div>
-        <div class="sub-desc">AI 분석 리포트 무제한 · 하루 1회만 써도 이득</div>
+
+    <!-- Match History -->
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;">
+      <div class="section-title" style="margin:0;">매치 히스토리</div>
+      <select class="select"><option>최근 7일</option><option>최근 30일</option><option>시즌 전체</option></select>
+    </div>
+
+    <div class="match-list">
+
+      <!-- Match 1: 1등 -->
+      <div class="match-card" onclick="this.classList.toggle('open')" style="border-left-color:#d4b254;">
+        <div class="match-left"><div class="match-left-placement"><span class="placement p1">1</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-time-ago">2시간 전</span><span class="match-lp good">+42 LP</span></div><div class="match-legend-right"><div class="match-legend-icon-wrap"><div class="legend-icon">🐧</div><div class="legend-lv">9</div></div><div class="match-tags"><span class="match-tag match-tag-kill">도살자<span class="tag-tip">플레이어 킬 5회 이상</span></span></div></div></div>
+        <div class="match-content">
+          <div class="match-synergies"><span class="match-synergy">벌꿀 5</span><span class="match-synergy">현자 4</span><span class="match-synergy">요정 2</span></div>
+          <div class="match-champs" style="margin-top:6px;">
+            <div class="match-champ-wrap"><div class="champ-star">★★★</div><div class="match-champ">베이</div><div class="match-champ-items"><span class="match-item-dot"></span><span class="match-item-dot"></span><span class="match-item-dot"></span></div></div>
+            <div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">니코</div><div class="match-champ-items-empty"></div></div>
+            <div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">소라</div><div class="match-champ-items"><span class="match-item-dot"></span><span class="match-item-dot"></span><span class="match-item-dot"></span></div></div>
+            <div class="match-champ-wrap"><div class="champ-star">★★★</div><div class="match-champ">코그</div><div class="match-champ-items"><span class="match-item-dot"></span><span class="match-item-dot"></span><span class="match-item-dot"></span></div></div>
+            <div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">블리</div><div class="match-champ-items-empty"></div></div>
+            <div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">룰루</div><div class="match-champ-items-empty"></div></div>
+            <div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">나미</div><div class="match-champ-items-empty"></div></div>
+            <div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">뽀삐</div><div class="match-champ-items-empty"></div></div>
+          </div>
+        </div>
+        <div class="match-quick-btns"><button class="match-quick-btn copy-team" onclick="event.stopPropagation()">📋</button><button class="match-quick-btn copy-link" onclick="event.stopPropagation()">🔗</button></div>
+        <div class="match-actions"><button class="analyze-btn" onclick="event.stopPropagation()">AI 분석</button></div>
+        <span class="match-expand">▼</span>
       </div>
-      <div style="text-align:right;">
-        <div class="subscribe-price">₩9,900/월</div>
-        <button class="subscribe-btn">구독하기</button>
+      <div class="match-detail">
+        <div class="detail-header">
+          <span class="detail-header-label">매치 요약:</span>
+          <div class="match-tags"><span class="match-tag match-tag-kill">도살자<span class="tag-tip">플레이어 킬 5회 이상</span></span><span class="match-tag match-tag-star">삼위일체<span class="tag-tip">3성 챔피언 3개 이상</span></span></div>
+          <div class="detail-avg-tier">평균 티어: <span>Master 180 LP</span></div>
+        </div>
+        <div class="participant highlight">
+          <span class="part-rank p1">1</span>
+          <div class="part-legend-wrap"><div class="part-legend">🐧</div><div class="part-lv">9</div></div>
+          <div class="part-info"><span class="part-name">Hide on bush</span><span class="part-tier">Master 351 LP</span><span class="part-death">28:43 | 4-6</span></div>
+          <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">174</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">82</span></div></div>
+          <div class="part-comp"><div class="part-synergies"><span class="match-synergy">벌꿀 5</span><span class="match-synergy">현자 4</span><span class="match-synergy">요정 2</span></div>
+          <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★★</div><div class="part-champ">베이</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">니코</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">소라</div></div><div class="part-champ-wrap"><div class="part-star">★★★</div><div class="part-champ">코그</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">블리</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">룰루</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">나미</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">뽀삐</div></div></div></div>
+          <button class="part-team-copy">📋 팀 코드</button>
+        </div>
+        <div class="participant">
+          <span class="part-rank p2">2</span>
+          <div class="part-legend-wrap"><div class="part-legend">🐱</div><div class="part-lv">9</div></div>
+          <div class="part-info"><span class="part-name">Player2#KR</span><span class="part-tier">Master 280 LP</span><span class="part-death">27:51 | 4-5</span></div>
+          <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">152</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">76</span></div></div>
+          <div class="part-comp"><div class="part-synergies"><span class="match-synergy">요정 4</span><span class="match-synergy">현자 3</span><span class="match-synergy">마법사 2</span></div>
+          <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">카르</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">니코</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">룰루</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">소라</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">나미</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">질리</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">모르</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">잔나</div></div></div></div>
+          <button class="part-team-copy">📋 팀 코드</button>
+        </div>
+        <div class="participant">
+          <span class="part-rank p3">3</span>
+          <div class="part-legend-wrap"><div class="part-legend">🦊</div><div class="part-lv">8</div></div>
+          <div class="part-info"><span class="part-name">Player3#KR</span><span class="part-tier">Diamond I 88 LP</span><span class="part-death">26:32 | 4-3</span></div>
+          <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">138</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">71</span></div></div>
+          <div class="part-comp"><div class="part-synergies"><span class="match-synergy">선봉 6</span><span class="match-synergy">전사 2</span><span class="match-synergy">수호 2</span></div>
+          <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">가렌</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">다리</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">판테</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">렉사</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">세주</div></div><div class="part-champ-wrap"><div class="part-star">★★★</div><div class="part-champ">브라</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">잭스</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">문도</div></div></div></div>
+          <button class="part-team-copy">📋 팀 코드</button>
+        </div>
+      </div>
+
+      <!-- Match 2: 3등 -->
+      <div class="match-card" style="border-left-color:#8ab8c4;">
+        <div class="match-left"><div class="match-left-placement"><span class="placement p3">3</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-time-ago">4시간 전</span><span class="match-lp good">+12 LP</span></div><div class="match-legend-right"><div class="match-legend-icon-wrap"><div class="legend-icon">🐧</div><div class="legend-lv">8</div></div><div class="match-tags"><span class="match-tag match-tag-disaster">재앙<span class="tag-tip">4코스트 챔피언 3성 달성</span></span></div></div></div>
+        <div class="match-content">
+          <div class="match-synergies"><span class="match-synergy">요정 4</span><span class="match-synergy">현자 3</span><span class="match-synergy">마법사 2</span></div>
+          <div class="match-champs" style="margin-top:6px;"><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">카르</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">니코</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">룰루</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">소라</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">나미</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">질리</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">모르</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">잔나</div></div></div>
+        </div>
+        <div class="match-quick-btns"><button class="match-quick-btn copy-team" onclick="event.stopPropagation()">📋</button><button class="match-quick-btn copy-link" onclick="event.stopPropagation()">🔗</button></div>
+        <div class="match-actions"><button class="analyze-btn" onclick="event.stopPropagation()">AI 분석</button></div>
+        <span class="match-expand">▼</span>
+      </div>
+
+      <!-- Match 3: 5등 -->
+      <div class="match-card" style="border-left-color:#777;">
+        <div class="match-left"><div class="match-left-placement"><span class="placement p5">5</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-time-ago">6시간 전</span><span class="match-lp" style="color:#c47272;">-18 LP</span></div><div class="match-legend-right"><div class="match-legend-icon-wrap"><div class="legend-icon">🐧</div><div class="legend-lv">7</div></div><div class="match-tags"><span class="match-tag match-tag-bleed">과다출혈<span class="tag-tip">4라운드 연속 체력 손실</span></span></div></div></div>
+        <div class="match-content">
+          <div class="match-synergies"><span class="match-synergy">전사 4</span><span class="match-synergy">선봉 2</span><span class="match-synergy">탱커 2</span></div>
+          <div class="match-champs" style="margin-top:6px;"><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">올라</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">브라</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">세주</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">다리</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">잭스</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">문도</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">렉사</div></div></div>
+        </div>
+        <div class="match-quick-btns"><button class="match-quick-btn copy-team" onclick="event.stopPropagation()">📋</button><button class="match-quick-btn copy-link" onclick="event.stopPropagation()">🔗</button></div>
+        <div class="match-actions"><button class="analyze-btn" onclick="event.stopPropagation()">AI 분석</button></div>
+        <span class="match-expand">▼</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tab: AI 분석 리포트 -->
+  <div class="tab-content" id="tab-report">
+    <!-- 잔여 횟수 -->
+    <div style="display:flex;align-items:center;justify-content:space-between;background:#161923;border:1px solid #2a2d3a;border-radius:10px;padding:16px 20px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:14px;color:#888;">잔여 분석 횟수</span>
+        <span style="font-size:24px;font-weight:700;color:#5a73c8;">3</span>
+        <span style="font-size:13px;color:#555;">회</span>
+      </div>
+      <button style="padding:6px 14px;background:#1e2130;border:1px solid #2a2d3a;border-radius:6px;color:#5a73c8;font-size:13px;cursor:pointer;">충전하기</button>
+    </div>
+
+    <div class="section-title" style="margin-top:4px;">분석 내역</div>
+    <div class="report-list">
+      <!-- Report 1 -->
+      <a href="AI 분석 상세.html" class="report-card" style="border-left-color:#d4b254;">
+        <div class="report-quick-btns"><button class="report-quick-btn copy-team" onclick="event.preventDefault();event.stopPropagation()">📋</button><button class="report-quick-btn copy-link" onclick="event.preventDefault();event.stopPropagation()">🔗</button></div>
+        <div class="report-left"><span class="report-placement rp1">1</span><span class="report-mode">랭크</span><span class="report-time">2시간 전</span></div>
+        <div class="report-content">
+          <div class="report-champs">
+            <div class="report-champ-wrap"><div class="report-star">★★★</div><div class="report-champ">베이</div><div class="report-champ-items"><span class="report-item-dot"></span><span class="report-item-dot"></span><span class="report-item-dot"></span></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">니코</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">소라</div><div class="report-champ-items"><span class="report-item-dot"></span><span class="report-item-dot"></span><span class="report-item-dot"></span></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★★</div><div class="report-champ">코그</div><div class="report-champ-items"><span class="report-item-dot"></span><span class="report-item-dot"></span><span class="report-item-dot"></span></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">블리</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">룰루</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">나미</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★</div><div class="report-champ">뽀삐</div><div class="report-champ-items-empty"></div></div>
+          </div>
+          <div class="report-summary">아이템을 대천사 대신 푸른 파수꾼으로 바꾸면 순방률이 더 높았을 수 있습니다.</div>
+        </div>
+        <div class="report-grades">
+          <div class="grade grade-a"><div class="grade-val">A</div><div class="grade-label">운영</div></div>
+          <div class="grade grade-s"><div class="grade-val">S</div><div class="grade-label">덱</div></div>
+          <div class="grade grade-b"><div class="grade-val">B</div><div class="grade-label">아이템</div></div>
+          <div class="grade grade-s"><div class="grade-val">S</div><div class="grade-label">증강</div></div>
+        </div>
+      </a>
+      <!-- Report 2 -->
+      <a href="AI 분석 상세.html" class="report-card" style="border-left-color:#777;">
+        <div class="report-quick-btns"><button class="report-quick-btn copy-team" onclick="event.preventDefault();event.stopPropagation()">📋</button><button class="report-quick-btn copy-link" onclick="event.preventDefault();event.stopPropagation()">🔗</button></div>
+        <div class="report-left"><span class="report-placement rp5">5</span><span class="report-mode">랭크</span><span class="report-time">6시간 전</span></div>
+        <div class="report-content">
+          <div class="report-champs">
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">올라</div><div class="report-champ-items"><span class="report-item-dot"></span><span class="report-item-dot"></span><span class="report-item-dot"></span></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">브라</div><div class="report-champ-items"><span class="report-item-dot"></span><span class="report-item-dot"></span></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">세주</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★</div><div class="report-champ">다리</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">잭스</div><div class="report-champ-items"><span class="report-item-dot"></span><span class="report-item-dot"></span><span class="report-item-dot"></span></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★</div><div class="report-champ">문도</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★</div><div class="report-champ">렉사</div><div class="report-champ-items-empty"></div></div>
+          </div>
+          <div class="report-summary">선봉대 가렌이 더 나은 선택이었습니다. 남은 골드 23을 레벨업에 투자했어야 합니다.</div>
+        </div>
+        <div class="report-grades">
+          <div class="grade grade-c"><div class="grade-val">C</div><div class="grade-label">운영</div></div>
+          <div class="grade grade-c"><div class="grade-val">C</div><div class="grade-label">덱</div></div>
+          <div class="grade grade-c"><div class="grade-val">C</div><div class="grade-label">아이템</div></div>
+          <div class="grade grade-b"><div class="grade-val">B</div><div class="grade-label">증강</div></div>
+        </div>
+      </a>
+      <!-- Report 3 -->
+      <a href="AI 분석 상세.html" class="report-card" style="border-left-color:#8ab8c4;">
+        <div class="report-quick-btns"><button class="report-quick-btn copy-team" onclick="event.preventDefault();event.stopPropagation()">📋</button><button class="report-quick-btn copy-link" onclick="event.preventDefault();event.stopPropagation()">🔗</button></div>
+        <div class="report-left"><span class="report-placement rp3">3</span><span class="report-mode">랭크</span><span class="report-time">26.03.12</span></div>
+        <div class="report-content">
+          <div class="report-champs">
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">카르</div><div class="report-champ-items"><span class="report-item-dot"></span><span class="report-item-dot"></span><span class="report-item-dot"></span></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">니코</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">룰루</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">소라</div><div class="report-champ-items"><span class="report-item-dot"></span><span class="report-item-dot"></span></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">나미</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">질리</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★</div><div class="report-champ">모르</div><div class="report-champ-items-empty"></div></div>
+            <div class="report-champ-wrap"><div class="report-star">★★</div><div class="report-champ">잔나</div><div class="report-champ-items-empty"></div></div>
+          </div>
+          <div class="report-summary">2차 증강에서 마나 흐름 대역 대신 이코노미 증강을 선택한 것이 아쉽습니다.</div>
+        </div>
+        <div class="report-grades">
+          <div class="grade grade-a"><div class="grade-val">A</div><div class="grade-label">운영</div></div>
+          <div class="grade grade-s"><div class="grade-val">S</div><div class="grade-label">덱</div></div>
+          <div class="grade grade-a"><div class="grade-val">A</div><div class="grade-label">아이템</div></div>
+          <div class="grade grade-c"><div class="grade-val">C</div><div class="grade-label">증강</div></div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Tab: 결제 -->
+  <div class="tab-content" id="tab-payment">
+    <div class="credits-card">
+      <div class="credits-header">
+        <div>
+          <div class="credits-title">잔여 분석 횟수</div>
+          <div class="credits-label">회원가입 시 2회 무료 제공</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="credits-count">3</div>
+          <div class="credits-label">회 남음</div>
+        </div>
+      </div>
+      <div class="pricing">
+        <div class="price-card">
+          <div class="price-amount">1회</div>
+          <div class="price-value">₩500</div>
+          <div class="price-per">회당 ₩500</div>
+        </div>
+        <div class="price-card popular">
+          <div class="popular-badge">인기</div>
+          <div class="price-amount">5회</div>
+          <div class="price-value">₩2,000</div>
+          <div class="price-per">회당 ₩400</div>
+        </div>
+        <div class="price-card">
+          <div class="price-amount">15회</div>
+          <div class="price-value">₩5,000</div>
+          <div class="price-per">회당 ₩333</div>
+        </div>
+      </div>
+      <div class="subscribe-card">
+        <div class="subscribe-info">
+          <div class="sub-name">프리즘 티켓 (구독)</div>
+          <div class="sub-desc">AI 분석 리포트 무제한 · 하루 1회만 써도 이득</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="subscribe-price">₩9,900/월</div>
+          <button class="subscribe-btn">구독하기</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Report List -->
-  <div class="section-title">분석 리포트 내역</div>
-  <div class="report-list">
-
-    <!-- Report 1 -->
-    <div class="report-card">
-      <div class="report-top">
-        <span class="report-placement rp1">1등</span>
-        <span class="report-deck">벌꿀 베이가</span>
-        <span class="report-date">2시간 전</span>
-      </div>
-      <div class="report-grades">
-        <div class="grade"><div class="grade-value grade-a">A</div><div class="grade-label">덱 선택</div></div>
-        <div class="grade"><div class="grade-value grade-b">B</div><div class="grade-label">아이템</div></div>
-        <div class="grade"><div class="grade-value grade-a">A</div><div class="grade-label">증강</div></div>
-        <div class="grade"><div class="grade-value grade-a">A</div><div class="grade-label">구성</div></div>
-      </div>
-      <div class="report-summary">
-        <strong>종합:</strong> 벌꿀 베이가 덱을 잘 운영했습니다. 다만 베이가 아이템을 대천사 대신 <strong>푸른 파수꾼</strong>으로 바꾸면 순방률이 4% 더 높았을 수 있습니다. 증강 선택은 최적이었습니다.
-      </div>
+  <!-- Tab: 설정 -->
+  <div class="tab-content" id="tab-settings">
+    <div style="background:#161923;border:1px solid #2a2d3a;border-radius:12px;padding:24px;color:#888;font-size:14px;">
+      설정 탭 (추후 구현)
     </div>
-
-    <!-- Report 2 -->
-    <div class="report-card">
-      <div class="report-top">
-        <span class="report-placement rp5">5등</span>
-        <span class="report-deck">전사 올라프</span>
-        <span class="report-date">6시간 전</span>
-      </div>
-      <div class="report-grades">
-        <div class="grade"><div class="grade-value grade-c">C</div><div class="grade-label">덱 선택</div></div>
-        <div class="grade"><div class="grade-value grade-d">D</div><div class="grade-label">아이템</div></div>
-        <div class="grade"><div class="grade-value grade-c">C</div><div class="grade-label">증강</div></div>
-        <div class="grade"><div class="grade-value grade-b">B</div><div class="grade-label">구성</div></div>
-      </div>
-      <div class="report-summary">
-        <strong>종합:</strong> 전사 올라프는 현 패치 평균 4.1등으로 메타에서 밀리는 덱입니다. 비슷한 시너지의 <strong>선봉대 가렌</strong>(평균 2.8등)이 더 나은 선택이었습니다. 아이템도 올라프에 <strong>피바라기</strong> 대신 방어 아이템을 줬는데, 상위권의 82%는 피바라기를 사용합니다. 남은 골드가 23이었는데 레벨업에 투자했어야 합니다.
-      </div>
-    </div>
-
-    <!-- Report 3 -->
-    <div class="report-card">
-      <div class="report-top">
-        <span class="report-placement rp3">3등</span>
-        <span class="report-deck">요정 카르마</span>
-        <span class="report-date">어제</span>
-      </div>
-      <div class="report-grades">
-        <div class="grade"><div class="grade-value grade-a">A</div><div class="grade-label">덱 선택</div></div>
-        <div class="grade"><div class="grade-value grade-a">A</div><div class="grade-label">아이템</div></div>
-        <div class="grade"><div class="grade-value grade-c">C</div><div class="grade-label">증강</div></div>
-        <div class="grade"><div class="grade-value grade-b">B</div><div class="grade-label">구성</div></div>
-      </div>
-      <div class="report-summary">
-        <strong>종합:</strong> 요정 카르마 덱 선택과 아이템은 좋았지만, 2차 증강에서 <strong>마나 흐름 대역</strong> 대신 이코노미 증강을 선택한 것이 아쉽습니다. 이 덱에서는 마나 증강이 순방률 15% 높습니다.
-      </div>
-    </div>
-
   </div>
+
 </div>
 
 <footer class="footer">롤체토스 · Riot Games가 보증하지 않음</footer>
+
+<script>
+// Tab switching with fade animation
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const targetId = 'tab-' + tab.dataset.tab;
+    const target = document.getElementById(targetId);
+    if (target.classList.contains('active')) return;
+
+    // Update tab styles
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    // Toggle active on tab content — CSS handles visibility/opacity transition
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    target.classList.add('active');
+  });
+});
+
+// Bar chart animation
+const bars = document.querySelectorAll('.rank-dist-bar .bar');
+const maxCount = Math.max(...[...bars].map(b => parseInt(b.dataset.count)));
+const maxHeight = 80;
+bars.forEach((bar, i) => {
+  const ratio = parseInt(bar.dataset.count) / maxCount;
+  const targetH = Math.max(ratio * maxHeight, 4);
+  bar.style.height = '0px';
+  setTimeout(() => { bar.style.height = targetH + 'px'; }, 100 + i * 60);
+});
+
+// LP tooltip
+const tooltip = document.getElementById('lpTooltip');
+const chart = document.querySelector('.lp-chart');
+document.querySelectorAll('.lp-dot').forEach(dot => {
+  dot.addEventListener('mouseenter', (e) => {
+    const rect = chart.getBoundingClientRect();
+    const dotRect = dot.getBoundingClientRect();
+    tooltip.innerHTML = `<span class="tt-lp">${dot.dataset.lp}</span><br>${dot.dataset.date}`;
+    tooltip.style.display = 'block';
+    tooltip.style.left = (dotRect.left - rect.left - 30) + 'px';
+    tooltip.style.top = (dotRect.top - rect.top - 44) + 'px';
+  });
+  dot.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+});
+
+// Copy interactions
+document.querySelectorAll('.match-quick-btn.copy-team, .match-quick-btn.copy-link').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1200);
+  });
+});
+document.querySelectorAll('.part-team-copy').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1200);
+  });
+});
+document.querySelectorAll('.report-quick-btn.copy-team, .report-quick-btn.copy-link').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1200);
+  });
+});
+
+// Close profile dropdown on outside click
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.profile-wrap.open').forEach(wrap => {
+    if (!wrap.contains(e.target)) wrap.classList.remove('open');
+  });
+});
+</script>
 </body>
 </html>

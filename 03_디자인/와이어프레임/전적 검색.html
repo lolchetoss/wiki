@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>롤체토스 - 전적 검색 와이어프레임</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #0f1118; color: #c0c4cc; }
+  body { font-family: 'Pretendard', -apple-system, sans-serif; background: #0f1118; color: #c0c4cc; }
   .header-bg { background: #161923; border-bottom: 1px solid #2a2d3a; }
   .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; max-width: 1100px; margin: 0 auto; }
   .logo { font-size: 20px; font-weight: 700; color: #5a73c8; text-decoration: none; }
@@ -20,6 +21,15 @@
   .header-search .search-icon { color: #555; font-size: 22px; flex-shrink: 0; cursor: pointer; background: none; border: none; transform: scaleX(-1); }
   .lang-select { background: #1e2130; border: 1px solid #2a2d3a; color: #c0c4cc; padding: 6px 12px; border-radius: 6px; font-size: 13px; }
   .select { background: #1e2130; border: 1px solid #2a2d3a; color: #c0c4cc; padding: 6px 12px; border-radius: 6px; font-size: 13px; }
+  .profile-wrap { position: relative; }
+  .profile-icon-btn { width: 32px; height: 32px; border-radius: 50%; background: #2a2d3a; border: 1px solid #3a3d4a; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; color: #888; transition: border-color 0.2s; }
+  .profile-icon-btn:hover { border-color: #5a73c8; }
+  .profile-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 8px; min-width: 140px; padding: 6px 0; display: none; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .profile-wrap.open .profile-dropdown { display: block; }
+  .profile-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #c0c4cc; text-decoration: none; }
+  .profile-dropdown a:hover { background: #252836; }
+  .profile-dropdown .divider { height: 1px; background: #2a2d3a; margin: 4px 0; }
+  .profile-dropdown .logout { color: #c47272; }
   .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
 
   /* Profile Card */
@@ -120,41 +130,51 @@
   .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
   .match-filters { display: flex; gap: 8px; margin-bottom: 12px; }
   .match-list { display: flex; flex-direction: column; gap: 6px; }
-  .match-card { display: flex; align-items: center; gap: 12px; background: #161923; border: 1px solid #2a2d3a; border-radius: 8px; padding: 12px 8px 12px 6px; cursor: pointer; transition: border-color 0.2s; position: relative; border-left: 3px solid; }
-  .match-card:hover { border-color: #5a73c8; }
+  .match-card { display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px; background: #161923; border: 1px solid #2a2d3a; border-radius: 8px; padding: 12px 8px 12px 6px; cursor: pointer; transition: border-color 0.2s; position: relative; border-left: 3px solid; }
+  .match-content { min-width: 0; }
+  .match-card:hover { border-top-color: #5a73c8; border-right-color: #5a73c8; border-bottom-color: #5a73c8; }
+  .match-card.open:hover { border-bottom-color: transparent; }
+  .match-card.open:hover + .match-detail { border-color: #5a73c8; }
   .match-right { margin-left: auto; display: flex; align-items: center; gap: 12px; padding-right: 24px; flex-shrink: 0; }
   .match-right-info { text-align: right; font-size: 12px; color: #555; line-height: 1.6; }
   .match-right-info .match-time-r { color: #888; }
-  .match-legend-right { display: flex; flex-direction: column; align-items: center; gap: 2px; padding-left: 18px; border-left: 1px solid #2a2d3a; margin-left: 6px; padding-right: 6px; }
+  .match-legend-right { position: relative; padding-left: 18px; border-left: 1px solid #2a2d3a; margin-left: 6px; padding-right: 6px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .match-legend-icon-wrap { position: relative; }
   .match-legend-right .legend-icon { width: 40px; height: 40px; border-radius: 50%; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid #3a3d4a; }
-  .match-legend-right .legend-lv { font-size: 10px; color: #888; }
+  .match-legend-right .legend-lv { position: absolute; bottom: -2px; right: -2px; width: 16px; height: 16px; border-radius: 3px; background: #252836; border: 1px solid #3a3d4a; font-size: 9px; font-weight: 700; color: #c0c4cc; display: flex; align-items: center; justify-content: center; }
   .match-synergies { display: flex; gap: 4px; font-size: 12px; color: #888; flex-wrap: wrap; }
   .match-synergy { padding: 3px 8px; background: #252836; border-radius: 4px; }
-  .champ-star { font-size: 8px; color: #d4b254; text-align: center; line-height: 1; margin-bottom: 1px; }
+  .champ-star { font-size: 9px; color: #d4b254; text-align: center; line-height: 1; margin-bottom: -6px; position: relative; z-index: 1; }
   .match-tags { display: flex; gap: 4px; }
+  .match-legend-right .match-tags { flex-direction: column; gap: 3px; align-items: center; }
+  .match-legend-right .match-tag { font-size: 10px; padding: 2px 6px; text-align: center; white-space: nowrap; }
   .match-tag { padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-  .match-tag-win { background: #1a2a24; color: #6dbd7e; }
-  .match-tag-first { background: #2a2a1a; color: #d4b254; }
-  .match-tag-streak { background: #2a1a1a; color: #c47272; }
-  .match-tag-best { background: #1a1d38; color: #5a73c8; }
+  .match-tag-kill { background: #2a1a1e; color: #e05555; }
+  .match-tag-star { background: #2a2a1a; color: #d4b254; }
+  .match-tag-value { background: #221a2e; color: #a87bd4; }
+  .match-tag-econ { background: #1a2a24; color: #6dbd7e; }
+  .match-tag-bleed { background: #2a1a1a; color: #c47272; }
+  .match-tag-honey { background: #2e2818; color: #d4a030; }
+  .match-tag-disaster { background: #2e1520; color: #e04080; }
+  .match-tag-god { background: #2a2510; color: #f0d060; text-shadow: 0 0 6px rgba(240,208,96,0.4); }
+  .match-tag { position: relative; cursor: default; }
+  .match-tag .tag-tip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #252836; border: 1px solid #2a2d3a; border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 400; color: #888; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10; }
+  .match-tag:hover .tag-tip { opacity: 1; }
   .match-players { display: grid; grid-template-columns: repeat(2, auto); grid-auto-flow: column; grid-template-rows: repeat(4, auto); gap: 4px 16px; font-size: 12px; color: #555; margin-left: auto; }
   .match-player { display: flex; align-items: center; gap: 6px; }
   .match-player-rank { font-weight: 700; width: 14px; font-size: 11px; }
   .match-player.me { color: #c0c4cc; font-weight: 600; }
   .mp-legend { font-size: 13px; width: 24px; height: 24px; border-radius: 50%; background: #2a2d3a; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid #3a3d4a; }
-  .match-expand { position: absolute; right: 12px; color: #555; font-size: 12px; transition: transform 0.3s; }
+  .match-expand { color: #555; font-size: 12px; transition: transform 0.3s; justify-self: center; }
   .match-card.open .match-expand { transform: rotate(180deg); }
   .match-card.open { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
   .match-left { display: flex; align-items: center; gap: 8px; }
   .match-left-placement { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 36px; }
-  .match-left-info { display: flex; flex-direction: column; font-size: 12px; }
-  .match-left-info .match-lp-total { font-size: 11px; color: #555; }
-  .match-legend { width: 32px; height: 32px; border-radius: 50%; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 14px; margin-bottom: 4px; border: 2px solid #3a3d4a; }
-  .match-lp { font-size: 11px; font-weight: 600; margin-top: 2px; }
   .placement { font-size: 22px; font-weight: 700; text-align: center; line-height: 1; }
-  .match-mode { font-size: 11px; color: #888; margin-top: 4px; }
-  .match-time { font-size: 10px; color: #555; margin-top: 2px; }
-  .match-duration { font-size: 10px; color: #555; }
+  .match-left-info { display: flex; flex-direction: column; font-size: 12px; }
+  .match-lp { font-size: 11px; font-weight: 600; margin-top: 2px; }
+  .match-mode { font-size: 11px; color: #888; }
+  .match-time-ago { font-size: 10px; color: #555; margin-top: 1px; }
   .p1 { color: #d4b254; }
   .p2 { color: #8ab8c4; }
   .p3 { color: #8ab8c4; }
@@ -164,7 +184,7 @@
   .p7 { color: #777; }
   .p8 { color: #c47272; }
   .match-deck { font-size: 13px; font-weight: 600; min-width: 100px; }
-  .match-champs { display: flex; gap: 4px; }
+  .match-champs { display: flex; gap: 4px; flex-wrap: wrap; }
   .match-champ-wrap { display: flex; flex-direction: column; align-items: center; }
   .match-champ { width: 36px; height: 36px; border-radius: 5px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #666; }
   .match-champ-items { display: flex; gap: 1px; margin-top: -6px; position: relative; z-index: 1; height: 10px; }
@@ -174,23 +194,61 @@
   .match-aug { width: 32px; height: 32px; border-radius: 5px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #888; }
   .match-meta { margin-left: auto; text-align: right; font-size: 12px; color: #666; }
   .match-mode { font-size: 11px; color: #888; }
-  .analyze-btn { padding: 4px 10px; background: #5a73c8; border: none; border-radius: 4px; color: #fff; font-size: 11px; cursor: pointer; margin-left: 8px; }
+  .analyze-btn { padding: 5px 10px; background: #5a73c8; border: none; border-radius: 4px; color: #fff; font-size: 11px; cursor: pointer; white-space: nowrap; }
+  .match-actions { display: flex; gap: 6px; align-items: center; justify-self: end; }
+  .match-quick-btns { position: absolute; top: 4px; right: 4px; display: flex; gap: 2px; z-index: 2; }
+  .match-quick-btn { width: 22px; height: 22px; background: transparent; border: none; border-radius: 3px; color: #555; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
+  .match-quick-btn:hover { color: #c0c4cc; background: #252836; }
+  .match-quick-btn::after { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: #252836; border: 1px solid #2a2d3a; color: #c0c4cc; font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10; }
+  .match-quick-btn:hover::after { opacity: 1; }
+  .match-quick-btn.copy-team::after { content: '팀 코드 복사'; }
+  .match-quick-btn.copy-link::after { content: '매치 링크 복사'; }
+  .match-quick-btn.copied::after { content: '복사되었습니다!' !important; background: #5a73c8 !important; border-color: #5a73c8 !important; opacity: 1 !important; }
+  .part-stats { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; min-width: 70px; }
+  .part-stat-icon { font-size: 13px; width: 18px; text-align: center; flex-shrink: 0; color: #888; }
+  .part-stat { display: flex; align-items: center; gap: 4px; font-size: 12px; position: relative; cursor: default; }
+  .part-stat::after { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: #252836; border: 1px solid #2a2d3a; color: #c0c4cc; font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10; }
+  .part-stat:hover::after { opacity: 1; }
+  .part-stat.stat-dmg::after { content: '입힌 피해량'; }
+  .part-stat.stat-gold::after { content: '팀 가치'; }
+  .part-stat-val { font-size: 12px; color: #c0c4cc; font-weight: 600; min-width: 28px; text-align: left; }
+  .part-team-copy { padding: 4px 8px; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 4px; color: #888; font-size: 11px; cursor: pointer; flex-shrink: 0; white-space: nowrap; position: relative; margin-left: auto; }
+  .part-team-copy:hover { border-color: #5a73c8; color: #c0c4cc; }
+  .part-team-copy::after { content: '팀 코드 복사'; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #252836; border: 1px solid #2a2d3a; color: #c0c4cc; font-size: 10px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 10; }
+  .part-team-copy:hover::after { opacity: 1; }
+  .part-team-copy.copied::after { content: '복사되었습니다!' !important; background: #5a73c8 !important; border-color: #5a73c8 !important; opacity: 1 !important; }
 
   /* Match Detail (expanded) */
-  .match-detail { max-height: 0; overflow: hidden; background: #0f1118; border: 1px solid #2a2d3a; border-top: none; border-radius: 0 0 8px 8px; margin-top: -7px; transition: max-height 0.35s ease-in-out, padding 0.35s ease-in-out; padding: 0 16px; }
-  .match-card.open + .match-detail { max-height: 600px; padding: 16px; }
-  .participant { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #1e2130; font-size: 13px; }
+  .match-detail { max-height: 0; overflow: hidden; background: #0f1118; border: 1px solid #2a2d3a; border-top: none; border-radius: 0 0 8px 8px; margin-top: -7px; transition: max-height 0.3s ease-out, padding 0.3s ease-out; padding: 0 16px; }
+  .match-card.open + .match-detail { max-height: 900px; overflow: visible; padding: 16px; border-top: 1px solid #2a2d3a; }
+  .match-card.open { border-bottom: 1px solid transparent; }
+  .detail-header { display: flex; align-items: center; gap: 8px; padding-bottom: 10px; margin-bottom: 6px; border-bottom: 1px solid #1e2130; font-size: 12px; color: #888; }
+  .detail-header-label { font-weight: 600; color: #c0c4cc; margin-right: 4px; }
+  .detail-avg-tier { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+  .detail-avg-tier span { color: #9b59b6; font-weight: 600; }
+  .participant { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #1e2130; font-size: 13px; }
   .participant:last-child { border-bottom: none; }
-  .participant.highlight { background: #1a1a2e; margin: 0 -16px; padding: 8px 16px; border-radius: 4px; }
-  .part-rank { width: 24px; font-weight: 700; text-align: center; }
-  .part-name { width: 100px; cursor: pointer; }
+  .participant.highlight { background: #1a1a2e; margin: 0 -16px; padding: 10px 16px; border-radius: 4px; }
+  .part-rank { width: 28px; font-size: 16px; font-weight: 700; text-align: center; flex-shrink: 0; }
+  .part-legend-wrap { position: relative; flex-shrink: 0; margin-right: 4px; }
+  .part-legend { width: 36px; height: 36px; border-radius: 50%; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 16px; border: 2px solid #3a3d4a; }
+  .part-lv { position: absolute; bottom: -2px; right: -2px; width: 16px; height: 16px; border-radius: 3px; background: #252836; border: 1px solid #3a3d4a; font-size: 9px; font-weight: 700; color: #c0c4cc; display: flex; align-items: center; justify-content: center; }
+  .part-info { display: flex; flex-direction: column; flex-shrink: 0; min-width: 110px; }
+  .part-name { cursor: pointer; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2; }
   .part-name:hover { color: #5a73c8; }
-  .part-champs { display: flex; gap: 2px; }
-  .part-champ { width: 24px; height: 24px; border-radius: 3px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 7px; color: #666; }
-  .part-traits { display: flex; gap: 2px; }
-  .part-trait { width: 18px; height: 18px; border-radius: 3px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 7px; color: #888; }
-  .part-augs { display: flex; gap: 2px; margin-left: auto; }
-  .part-aug { width: 20px; height: 20px; border-radius: 3px; background: #2a2d3a; font-size: 7px; display: flex; align-items: center; justify-content: center; color: #888; }
+  .part-tier { font-size: 11px; color: #888; line-height: 1.2; margin-top: 2px; }
+  .part-death { font-size: 10px; color: #555; line-height: 1.2; margin-top: 1px; }
+  .part-champs { display: flex; gap: 3px; }
+  .part-champ-wrap { display: flex; flex-direction: column; align-items: center; }
+  .part-champ { width: 36px; height: 36px; border-radius: 5px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #666; }
+  .part-star { font-size: 9px; color: #d4b254; text-align: center; line-height: 1; margin-bottom: -6px; position: relative; z-index: 1; }
+  .part-traits { display: flex; gap: 3px; }
+  .part-trait { width: 22px; height: 22px; border-radius: 3px; background: #2a2d3a; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #888; }
+  .part-comp { display: flex; flex-direction: column; gap: 3px; margin-left: -8px; }
+  .part-synergies { display: flex; gap: 4px; font-size: 11px; color: #888; flex-wrap: wrap; }
+  .part-synergies .match-synergy { padding: 2px 6px; font-size: 11px; }
+  .part-augs { display: flex; gap: 3px; margin-left: auto; flex-shrink: 0; }
+  .part-aug { width: 32px; height: 32px; border-radius: 5px; background: #2a2d3a; font-size: 10px; display: flex; align-items: center; justify-content: center; color: #888; }
 
   .footer { text-align: center; padding: 32px; color: #444; font-size: 12px; border-top: 1px solid #1e2130; margin-top: 48px; }
 </style>
@@ -214,6 +272,14 @@
       <option>🇰🇷&ensp;KO</option>
       <option>🇺🇸&ensp;EN</option>
     </select>
+    <div class="profile-wrap">
+      <button class="profile-icon-btn" onclick="this.parentElement.classList.toggle('open')">🐧</button>
+      <div class="profile-dropdown">
+        <a href="#">마이페이지</a>
+        <div class="divider"></div>
+        <a href="#" class="logout">로그아웃</a>
+      </div>
+    </div>
   </div>
 </header>
 </div>
@@ -419,14 +485,14 @@
   </div>
 
   <div class="match-list">
-    <!-- Match 1 -->
+
+    <!-- 매치 태그: 전설이 아이콘 아래 배치 -->
+
+    <!-- Match 1: 1등, 태그 1개 -->
     <div class="match-card" onclick="this.classList.toggle('open')" style="border-left-color:#d4b254;">
-      <div class="match-left"><div class="match-left-placement"><span class="placement p1">1</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-lp good">+42 LP</span><span class="match-lp-total">351 LP</span></div><div class="match-legend-right"><div class="legend-icon">🐧</div><div class="legend-lv">Lv.9</div></div></div>
-      <div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <div class="match-synergies"><span class="match-synergy">벌꿀 5</span><span class="match-synergy">현자 4</span><span class="match-synergy">요정 2</span></div>
-          <div class="match-tags"><span class="match-tag match-tag-first">1등</span><span class="match-tag match-tag-best">3연승</span></div>
-        </div>
+      <div class="match-left"><div class="match-left-placement"><span class="placement p1">1</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-time-ago">2시간 전</span><span class="match-lp good">+42 LP</span></div><div class="match-legend-right"><div class="match-legend-icon-wrap"><div class="legend-icon">🐧</div><div class="legend-lv">9</div></div><div class="match-tags"><span class="match-tag match-tag-kill">도살자<span class="tag-tip">플레이어 킬 5회 이상</span></span></div></div></div>
+      <div class="match-content">
+        <div class="match-synergies"><span class="match-synergy">벌꿀 5</span><span class="match-synergy">현자 4</span><span class="match-synergy">요정 2</span></div>
         <div class="match-champs" style="margin-top:6px;">
           <div class="match-champ-wrap"><div class="champ-star">★★★</div><div class="match-champ">베이</div><div class="match-champ-items"><span class="match-item-dot"></span><span class="match-item-dot"></span><span class="match-item-dot"></span></div></div>
           <div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">니코</div><div class="match-champ-items-empty"></div></div>
@@ -438,131 +504,140 @@
           <div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">뽀삐</div><div class="match-champ-items-empty"></div></div>
         </div>
       </div>
-      <div class="match-players">
-        <div class="match-player me"><span class="match-player-rank p1">1</span><span class="mp-legend">🐧</span>Hide on bus..</div>
-        <div class="match-player"><span class="match-player-rank p2">2</span><span class="mp-legend">🐱</span>Player2</div>
-        <div class="match-player"><span class="match-player-rank p3">3</span><span class="mp-legend">🦊</span>Player3</div>
-        <div class="match-player"><span class="match-player-rank p4">4</span><span class="mp-legend">🐻</span>Player4</div>
-        <div class="match-player"><span class="match-player-rank p5">5</span><span class="mp-legend">🐸</span>Player5</div>
-        <div class="match-player"><span class="match-player-rank p6">6</span><span class="mp-legend">🐼</span>Player6</div>
-        <div class="match-player"><span class="match-player-rank p7">7</span><span class="mp-legend">🐰</span>Player7</div>
-        <div class="match-player"><span class="match-player-rank p8">8</span><span class="mp-legend">🐶</span>Player8</div>
+      <div class="match-quick-btns"><button class="match-quick-btn copy-team" onclick="event.stopPropagation()">📋</button><button class="match-quick-btn copy-link" onclick="event.stopPropagation()">🔗</button></div>
+      <div class="match-actions">
+        <button class="analyze-btn" onclick="event.stopPropagation()">AI 분석</button>
       </div>
-      <div class="match-right"><div class="match-right-info"><div class="match-time-r">2시간 전</div><div>28:43 · 4-6</div></div></div>
       <span class="match-expand">▼</span>
     </div>
     <div class="match-detail">
+      <div class="detail-header">
+        <span class="detail-header-label">매치 요약:</span>
+        <div class="match-tags"><span class="match-tag match-tag-kill">도살자<span class="tag-tip">플레이어 킬 5회 이상</span></span><span class="match-tag match-tag-star">삼위일체<span class="tag-tip">3성 챔피언 3개 이상</span></span></div>
+        <div class="detail-avg-tier">평균 티어: <span>Master 180 LP</span></div>
+      </div>
       <div class="participant highlight">
         <span class="part-rank p1">1</span>
-        <span class="part-name">Hide on bus...</span>
-        <div class="part-champs"><div class="part-champ">베이</div><div class="part-champ">니코</div><div class="part-champ">소라</div><div class="part-champ">코그</div><div class="part-champ">블리</div><div class="part-champ">룰루</div><div class="part-champ">나미</div><div class="part-champ">뽀삐</div></div>
-        <div class="part-augs"><div class="part-aug">증1</div><div class="part-aug">증2</div><div class="part-aug">증3</div></div>
+        <div class="part-legend-wrap"><div class="part-legend">🐧</div><div class="part-lv">9</div></div>
+        <div class="part-info"><span class="part-name">Hide on bush</span><span class="part-tier">Master 351 LP</span><span class="part-death">28:43 | 4-6</span></div>
+        <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">174</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">82</span></div></div>        <div class="part-comp"><div class="part-synergies"><span class="match-synergy">벌꿀 5</span><span class="match-synergy">현자 4</span><span class="match-synergy">요정 2</span></div>
+        <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★★</div><div class="part-champ">베이</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">니코</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">소라</div></div><div class="part-champ-wrap"><div class="part-star">★★★</div><div class="part-champ">코그</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">블리</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">룰루</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">나미</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">뽀삐</div></div></div></div>
+        <button class="part-team-copy">📋 팀 코드</button>
       </div>
-      <div class="participant"><span class="part-rank p2">2</span><span class="part-name">Player2#KR</span><div class="part-champs"><div class="part-champ">카르</div><div class="part-champ">니코</div><div class="part-champ">룰루</div><div class="part-champ">소라</div><div class="part-champ">나미</div><div class="part-champ">질리</div><div class="part-champ">모르</div><div class="part-champ">잔나</div></div><div class="part-augs"><div class="part-aug">증1</div><div class="part-aug">증2</div><div class="part-aug">증3</div></div></div>
-      <div class="participant"><span class="part-rank p3">3</span><span class="part-name">Player3#KR</span><div class="part-champs"><div class="part-champ">가렌</div><div class="part-champ">다리</div><div class="part-champ">판테</div><div class="part-champ">렉사</div><div class="part-champ">세주</div><div class="part-champ">브라</div><div class="part-champ">잭스</div><div class="part-champ">문도</div></div><div class="part-augs"><div class="part-aug">증1</div><div class="part-aug">증2</div><div class="part-aug">증3</div></div></div>
-      <div class="participant"><span class="part-rank p4">4</span><span class="part-name">Player4#KR</span><div class="part-champs"><div class="part-champ">올라</div><div class="part-champ">브라</div><div class="part-champ">세주</div><div class="part-champ">다리</div><div class="part-champ">잭스</div><div class="part-champ">문도</div><div class="part-champ">렉사</div><div class="part-champ">탐켄</div></div><div class="part-augs"><div class="part-aug">증1</div><div class="part-aug">증2</div><div class="part-aug">증3</div></div></div>
-      <div class="participant"><span class="part-rank p5">5</span><span class="part-name">Player5#KR</span><div class="part-champs"><div class="part-champ">럭스</div><div class="part-champ">질리</div><div class="part-champ">잔나</div><div class="part-champ">소라</div><div class="part-champ">나미</div><div class="part-champ">카르</div><div class="part-champ">룰루</div><div class="part-champ">니코</div></div><div class="part-augs"><div class="part-aug">증1</div><div class="part-aug">증2</div><div class="part-aug">증3</div></div></div>
-      <div class="participant"><span class="part-rank p6">6</span><span class="part-name">Player6#KR</span><div class="part-champs"><div class="part-champ">신드</div><div class="part-champ">스웨</div><div class="part-champ">말자</div><div class="part-champ">소라</div><div class="part-champ">나미</div><div class="part-champ">잔나</div><div class="part-champ">모르</div><div class="part-champ">카서</div></div><div class="part-augs"><div class="part-aug">증1</div><div class="part-aug">증2</div><div class="part-aug">증3</div></div></div>
-      <div class="participant"><span class="part-rank p7">7</span><span class="part-name">Player7#KR</span><div class="part-champs"><div class="part-champ">쉬바</div><div class="part-champ">니달</div><div class="part-champ">엘리</div><div class="part-champ">스웨</div><div class="part-champ">잭스</div><div class="part-champ">세주</div><div class="part-champ">렉사</div><div class="part-champ">브라</div></div><div class="part-augs"><div class="part-aug">증1</div><div class="part-aug">증2</div><div class="part-aug">증3</div></div></div>
-      <div class="participant"><span class="part-rank p8">8</span><span class="part-name">Player8#KR</span><div class="part-champs"><div class="part-champ">코그</div><div class="part-champ">베이</div><div class="part-champ">블리</div><div class="part-champ">니코</div><div class="part-champ">렉사</div><div class="part-champ">룰루</div><div class="part-champ">뽀삐</div><div class="part-champ">케넨</div></div><div class="part-augs"><div class="part-aug">증1</div><div class="part-aug">증2</div><div class="part-aug">증3</div></div></div>
+      <div class="participant">
+        <span class="part-rank p2">2</span>
+        <div class="part-legend-wrap"><div class="part-legend">🐱</div><div class="part-lv">9</div></div>
+        <div class="part-info"><span class="part-name">Player2#KR</span><span class="part-tier">Master 280 LP</span><span class="part-death">27:51 | 4-5</span></div>
+        <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">152</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">76</span></div></div>        <div class="part-comp"><div class="part-synergies"><span class="match-synergy">요정 4</span><span class="match-synergy">현자 3</span><span class="match-synergy">마법사 2</span></div>
+        <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">카르</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">니코</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">룰루</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">소라</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">나미</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">질리</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">모르</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">잔나</div></div></div></div>
+        <button class="part-team-copy">📋 팀 코드</button>
+      </div>
+      <div class="participant">
+        <span class="part-rank p3">3</span>
+        <div class="part-legend-wrap"><div class="part-legend">🦊</div><div class="part-lv">8</div></div>
+        <div class="part-info"><span class="part-name">Player3#KR</span><span class="part-tier">Diamond I 88 LP</span><span class="part-death">26:32 | 4-3</span></div>
+        <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">138</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">71</span></div></div>        <div class="part-comp"><div class="part-synergies"><span class="match-synergy">선봉 6</span><span class="match-synergy">전사 2</span><span class="match-synergy">수호 2</span></div>
+        <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">가렌</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">다리</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">판테</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">렉사</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">세주</div></div><div class="part-champ-wrap"><div class="part-star">★★★</div><div class="part-champ">브라</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">잭스</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">문도</div></div></div></div>
+        <button class="part-team-copy">📋 팀 코드</button>
+      </div>
+      <div class="participant">
+        <span class="part-rank p4">4</span>
+        <div class="part-legend-wrap"><div class="part-legend">🐻</div><div class="part-lv">8</div></div>
+        <div class="part-info"><span class="part-name">Player4#KR</span><span class="part-tier">Diamond II 45 LP</span><span class="part-death">25:18 | 4-2</span></div>
+        <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">121</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">65</span></div></div>        <div class="part-comp"><div class="part-synergies"><span class="match-synergy">전사 4</span><span class="match-synergy">선봉 2</span><span class="match-synergy">탱커 2</span></div>
+        <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">올라</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">브라</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">세주</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">다리</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">잭스</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">문도</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">렉사</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">탐켄</div></div></div></div>
+        <button class="part-team-copy">📋 팀 코드</button>
+      </div>
+      <div class="participant">
+        <span class="part-rank p5">5</span>
+        <div class="part-legend-wrap"><div class="part-legend">🐸</div><div class="part-lv">8</div></div>
+        <div class="part-info"><span class="part-name">Player5#KR</span><span class="part-tier">Master 120 LP</span><span class="part-death">24:05 | 4-1</span></div>
+        <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">108</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">58</span></div></div>        <div class="part-comp"><div class="part-synergies"><span class="match-synergy">요정 4</span><span class="match-synergy">현자 4</span><span class="match-synergy">마법사 2</span></div>
+        <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">럭스</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">질리</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">잔나</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">소라</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">나미</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">카르</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">룰루</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">니코</div></div></div></div>
+        <button class="part-team-copy">📋 팀 코드</button>
+      </div>
+      <div class="participant">
+        <span class="part-rank p6">6</span>
+        <div class="part-legend-wrap"><div class="part-legend">🐼</div><div class="part-lv">7</div></div>
+        <div class="part-info"><span class="part-name">Player6#KR</span><span class="part-tier">Diamond I 62 LP</span><span class="part-death">22:40 | 3-6</span></div>
+        <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">94</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">52</span></div></div>        <div class="part-comp"><div class="part-synergies"><span class="match-synergy">마법사 4</span><span class="match-synergy">현자 2</span></div>
+        <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">신드</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">스웨</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">말자</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">소라</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">나미</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">잔나</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">모르</div></div></div></div>
+        <button class="part-team-copy">📋 팀 코드</button>
+      </div>
+      <div class="participant">
+        <span class="part-rank p7">7</span>
+        <div class="part-legend-wrap"><div class="part-legend">🐰</div><div class="part-lv">7</div></div>
+        <div class="part-info"><span class="part-name">Player7#KR</span><span class="part-tier">Diamond II 15 LP</span><span class="part-death">20:12 | 3-4</span></div>
+        <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">82</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">45</span></div></div>        <div class="part-comp"><div class="part-synergies"><span class="match-synergy">야생 4</span><span class="match-synergy">전사 2</span></div>
+        <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">쉬바</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">니달</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">엘리</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">스웨</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">잭스</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">세주</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">렉사</div></div></div></div>
+        <button class="part-team-copy">📋 팀 코드</button>
+      </div>
+      <div class="participant">
+        <span class="part-rank p8">8</span>
+        <div class="part-legend-wrap"><div class="part-legend">🐶</div><div class="part-lv">7</div></div>
+        <div class="part-info"><span class="part-name">Player8#KR</span><span class="part-tier">Diamond III 30 LP</span><span class="part-death">18:33 | 3-2</span></div>
+        <div class="part-stats"><div class="part-stat stat-dmg"><span class="part-stat-icon">⚔️</span><span class="part-stat-val">61</span></div><div class="part-stat stat-gold"><span class="part-stat-icon">💰</span><span class="part-stat-val">38</span></div></div>        <div class="part-comp"><div class="part-synergies"><span class="match-synergy">벌꿀 3</span><span class="match-synergy">현자 2</span></div>
+        <div class="part-champs"><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">코그</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">베이</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">블리</div></div><div class="part-champ-wrap"><div class="part-star">★★</div><div class="part-champ">니코</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">렉사</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">룰루</div></div><div class="part-champ-wrap"><div class="part-star">★</div><div class="part-champ">뽀삐</div></div></div></div>
+        <button class="part-team-copy">📋 팀 코드</button>
+      </div>
     </div>
 
-    <!-- Match 2 -->
-    <div class="match-card" onclick="this.classList.toggle('open')" style="border-left-color:#8ab8c4;">
-      <div class="match-left"><div class="match-left-placement"><span class="placement p3">3</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-lp good">+12 LP</span><span class="match-lp-total">309 LP</span></div><div class="match-legend-right"><div class="legend-icon">🐧</div><div class="legend-lv">Lv.8</div></div></div>
-      <div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <div class="match-synergies"><span class="match-synergy">요정 4</span><span class="match-synergy">현자 3</span><span class="match-synergy">마법사 2</span></div>
-          <div class="match-tags"><span class="match-tag match-tag-win">순방</span><span class="match-tag match-tag-best">2연승</span></div>
-        </div>
+    <!-- Match 2: 3등, 태그 1개 -->
+    <div class="match-card" style="border-left-color:#8ab8c4;">
+      <div class="match-left"><div class="match-left-placement"><span class="placement p3">3</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-time-ago">4시간 전</span><span class="match-lp good">+12 LP</span></div><div class="match-legend-right"><div class="match-legend-icon-wrap"><div class="legend-icon">🐧</div><div class="legend-lv">8</div></div><div class="match-tags"><span class="match-tag match-tag-disaster">재앙<span class="tag-tip">4코스트 챔피언 3성 달성</span></span></div></div></div>
+      <div class="match-content">
+        <div class="match-synergies"><span class="match-synergy">요정 4</span><span class="match-synergy">현자 3</span><span class="match-synergy">마법사 2</span></div>
         <div class="match-champs" style="margin-top:6px;"><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">카르</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">니코</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">룰루</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">소라</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">나미</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">질리</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">모르</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">잔나</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">케넨</div></div></div>
       </div>
-      <div class="match-players">
-        <div class="match-player"><span class="match-player-rank p1">1</span><span class="mp-legend">🐱</span>Player2</div>
-        <div class="match-player"><span class="match-player-rank p2">2</span><span class="mp-legend">🦊</span>Player3</div>
-        <div class="match-player me"><span class="match-player-rank p3">3</span><span class="mp-legend">🐧</span>Hide on bus..</div>
-        <div class="match-player"><span class="match-player-rank p4">4</span><span class="mp-legend">🐻</span>Player4</div>
-        <div class="match-player"><span class="match-player-rank p5">5</span><span class="mp-legend">🐸</span>Player5</div>
-        <div class="match-player"><span class="match-player-rank p6">6</span><span class="mp-legend">🐼</span>Player6</div>
-        <div class="match-player"><span class="match-player-rank p7">7</span><span class="mp-legend">🐰</span>Player7</div>
-        <div class="match-player"><span class="match-player-rank p8">8</span><span class="mp-legend">🐶</span>Player8</div>
+      <div class="match-quick-btns"><button class="match-quick-btn copy-team" onclick="event.stopPropagation()">📋</button><button class="match-quick-btn copy-link" onclick="event.stopPropagation()">🔗</button></div>
+      <div class="match-actions">
+        <button class="analyze-btn" onclick="event.stopPropagation()">AI 분석</button>
       </div>
-      <div class="match-right"><div class="match-right-info"><div class="match-time-r">4시간 전</div><div>31:12 · 3-8</div></div></div>
       <span class="match-expand">▼</span>
     </div>
-    <div class="match-detail"></div>
 
-    <!-- Match 3 -->
+    <!-- Match 3: 5등, 태그 1개 -->
     <div class="match-card" style="border-left-color:#777;">
-      <div class="match-left"><div class="match-left-placement"><span class="placement p5">5</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-lp" style="color:#c47272;">-18 LP</span><span class="match-lp-total">297 LP</span></div><div class="match-legend-right"><div class="legend-icon">🐧</div><div class="legend-lv">Lv.7</div></div></div>
-      <div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <div class="match-synergies"><span class="match-synergy">전사 4</span><span class="match-synergy">선봉 2</span><span class="match-synergy">탱커 2</span></div>
-          <div class="match-tags"><span class="match-tag match-tag-streak">연패 끊김</span></div>
-        </div>
+      <div class="match-left"><div class="match-left-placement"><span class="placement p5">5</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-time-ago">6시간 전</span><span class="match-lp" style="color:#c47272;">-18 LP</span></div><div class="match-legend-right"><div class="match-legend-icon-wrap"><div class="legend-icon">🐧</div><div class="legend-lv">7</div></div><div class="match-tags"><span class="match-tag match-tag-bleed">과다출혈<span class="tag-tip">4라운드 연속 체력 손실</span></span></div></div></div>
+      <div class="match-content">
+        <div class="match-synergies"><span class="match-synergy">전사 4</span><span class="match-synergy">선봉 2</span><span class="match-synergy">탱커 2</span></div>
         <div class="match-champs" style="margin-top:6px;"><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">올라</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">브라</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">세주</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">다리</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">잭스</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">문도</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">렉사</div></div></div>
       </div>
-      <div class="match-players">
-        <div class="match-player"><span class="match-player-rank p1">1</span><span class="mp-legend">🐶</span>Player8</div>
-        <div class="match-player"><span class="match-player-rank p2">2</span><span class="mp-legend">🐱</span>Player2</div>
-        <div class="match-player"><span class="match-player-rank p3">3</span><span class="mp-legend">🦊</span>Player3</div>
-        <div class="match-player"><span class="match-player-rank p4">4</span><span class="mp-legend">🐻</span>Player4</div>
-        <div class="match-player me"><span class="match-player-rank p5">5</span><span class="mp-legend">🐧</span>Hide on bus..</div>
-        <div class="match-player"><span class="match-player-rank p6">6</span><span class="mp-legend">🐼</span>Player6</div>
-        <div class="match-player"><span class="match-player-rank p7">7</span><span class="mp-legend">🐰</span>Player7</div>
-        <div class="match-player"><span class="match-player-rank p8">8</span><span class="mp-legend">🐸</span>Player5</div>
+      <div class="match-quick-btns"><button class="match-quick-btn copy-team" onclick="event.stopPropagation()">📋</button><button class="match-quick-btn copy-link" onclick="event.stopPropagation()">🔗</button></div>
+      <div class="match-actions">
+        <button class="analyze-btn" onclick="event.stopPropagation()">AI 분석</button>
       </div>
-      <div class="match-right"><div class="match-right-info"><div class="match-time-r">6시간 전</div><div>25:39 · 4-6</div></div></div>
       <span class="match-expand">▼</span>
     </div>
 
-    <!-- Match 4 -->
+    <!-- Match 4: 1등, 태그 1개 -->
     <div class="match-card" style="border-left-color:#d4b254;">
-      <div class="match-left"><div class="match-left-placement"><span class="placement p1">1</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-lp good">+45 LP</span><span class="match-lp-total">315 LP</span></div><div class="match-legend-right"><div class="legend-icon">🐧</div><div class="legend-lv">Lv.9</div></div></div>
-      <div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <div class="match-synergies"><span class="match-synergy">선봉 6</span><span class="match-synergy">전사 2</span><span class="match-synergy">수호 2</span></div>
-          <div class="match-tags"><span class="match-tag match-tag-first">1등</span></div>
-        </div>
+      <div class="match-left"><div class="match-left-placement"><span class="placement p1">1</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-time-ago">8시간 전</span><span class="match-lp good">+45 LP</span></div><div class="match-legend-right"><div class="match-legend-icon-wrap"><div class="legend-icon">🐧</div><div class="legend-lv">9</div></div><div class="match-tags"><span class="match-tag match-tag-god">신<span class="tag-tip">5코스트 챔피언 3성 달성</span></span></div></div></div>
+      <div class="match-content">
+        <div class="match-synergies"><span class="match-synergy">선봉 6</span><span class="match-synergy">전사 2</span><span class="match-synergy">수호 2</span></div>
         <div class="match-champs" style="margin-top:6px;"><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">가렌</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">다리</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">판테</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">렉사</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">세주</div></div><div class="match-champ-wrap"><div class="champ-star">★★★</div><div class="match-champ">브라</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">잭스</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">문도</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">뽀삐</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">탐켄</div></div></div>
       </div>
-      <div class="match-players">
-        <div class="match-player me"><span class="match-player-rank p1">1</span><span class="mp-legend">🐧</span>Hide on bus..</div>
-        <div class="match-player"><span class="match-player-rank p2">2</span><span class="mp-legend">🐼</span>Player6</div>
-        <div class="match-player"><span class="match-player-rank p3">3</span><span class="mp-legend">🐱</span>Player2</div>
-        <div class="match-player"><span class="match-player-rank p4">4</span><span class="mp-legend">🐰</span>Player7</div>
-        <div class="match-player"><span class="match-player-rank p5">5</span><span class="mp-legend">🦊</span>Player3</div>
-        <div class="match-player"><span class="match-player-rank p6">6</span><span class="mp-legend">🐻</span>Player4</div>
-        <div class="match-player"><span class="match-player-rank p7">7</span><span class="mp-legend">🐶</span>Player8</div>
-        <div class="match-player"><span class="match-player-rank p8">8</span><span class="mp-legend">🐸</span>Player5</div>
+      <div class="match-quick-btns"><button class="match-quick-btn copy-team" onclick="event.stopPropagation()">📋</button><button class="match-quick-btn copy-link" onclick="event.stopPropagation()">🔗</button></div>
+      <div class="match-actions">
+        <button class="analyze-btn" onclick="event.stopPropagation()">AI 분석</button>
       </div>
-      <div class="match-right"><div class="match-right-info"><div class="match-time-r">8시간 전</div><div>32:15 · 5-3</div></div></div>
       <span class="match-expand">▼</span>
     </div>
 
-    <!-- Match 5 -->
+    <!-- Match 5: 2등, 태그 없음 -->
     <div class="match-card" style="border-left-color:#8ab8c4;">
-      <div class="match-left"><div class="match-left-placement"><span class="placement p2">2</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-lp good">+28 LP</span><span class="match-lp-total">270 LP</span></div><div class="match-legend-right"><div class="legend-icon">🐧</div><div class="legend-lv">Lv.8</div></div></div>
-      <div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <div class="match-synergies"><span class="match-synergy">벌꿀 5</span><span class="match-synergy">현자 4</span><span class="match-synergy">요정 2</span></div>
-          <div class="match-tags"><span class="match-tag match-tag-win">순방</span></div>
-        </div>
+      <div class="match-left"><div class="match-left-placement"><span class="placement p2">2</span></div><div class="match-left-info"><span class="match-mode">랭크</span><span class="match-time-ago">어제</span><span class="match-lp good">+28 LP</span></div><div class="match-legend-right"><div class="match-legend-icon-wrap"><div class="legend-icon">🐧</div><div class="legend-lv">8</div></div></div></div>
+      <div class="match-content">
+        <div class="match-synergies"><span class="match-synergy">벌꿀 5</span><span class="match-synergy">현자 4</span><span class="match-synergy">요정 2</span></div>
         <div class="match-champs" style="margin-top:6px;"><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">베이</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">니코</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">소라</div></div><div class="match-champ-wrap"><div class="champ-star">★★★</div><div class="match-champ">코그</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">블리</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">룰루</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">나미</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">뽀삐</div></div><div class="match-champ-wrap"><div class="champ-star">★★</div><div class="match-champ">잔나</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">질리</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">케넨</div></div><div class="match-champ-wrap"><div class="champ-star">★</div><div class="match-champ">모르</div></div></div>
       </div>
-      <div class="match-players">
-        <div class="match-player"><span class="match-player-rank p1">1</span><span class="mp-legend">🐱</span>Player2</div>
-        <div class="match-player me"><span class="match-player-rank p2">2</span><span class="mp-legend">🐧</span>Hide on bus..</div>
-        <div class="match-player"><span class="match-player-rank p3">3</span><span class="mp-legend">🦊</span>Player3</div>
-        <div class="match-player"><span class="match-player-rank p4">4</span><span class="mp-legend">🐻</span>Player4</div>
-        <div class="match-player"><span class="match-player-rank p5">5</span><span class="mp-legend">🐸</span>Player5</div>
-        <div class="match-player"><span class="match-player-rank p6">6</span><span class="mp-legend">🐼</span>Player6</div>
-        <div class="match-player"><span class="match-player-rank p7">7</span><span class="mp-legend">🐰</span>Player7</div>
-        <div class="match-player"><span class="match-player-rank p8">8</span><span class="mp-legend">🐶</span>Player8</div>
+      <div class="match-quick-btns"><button class="match-quick-btn copy-team" onclick="event.stopPropagation()">📋</button><button class="match-quick-btn copy-link" onclick="event.stopPropagation()">🔗</button></div>
+      <div class="match-actions">
+        <button class="analyze-btn" onclick="event.stopPropagation()">AI 분석</button>
       </div>
-      <div class="match-right"><div class="match-right-info"><div class="match-time-r">어제</div><div>29:50 · 6-2</div></div></div>
       <span class="match-expand">▼</span>
     </div>
+
   </div>
 </div>
 
@@ -593,6 +668,24 @@ document.querySelectorAll('.lp-dot').forEach(dot => {
     tooltip.style.top = (dotRect.top - rect.top - 44) + 'px';
   });
   dot.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+});
+</script>
+<script>
+// 팀 코드 / 링크 복사 인터랙션
+document.querySelectorAll('.match-quick-btn.copy-team, .match-quick-btn.copy-link').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1200);
+  });
+});
+// 상세 팀 코드 복사
+document.querySelectorAll('.part-team-copy').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1200);
+  });
 });
 </script>
 </body>

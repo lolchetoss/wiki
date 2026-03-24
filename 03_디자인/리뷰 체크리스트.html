@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>롤체토스 와이어프레임 리뷰</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #0f1118; color: #c0c4cc; padding: 32px; max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 20px; color: #e0e0e0; margin-bottom: 8px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 24px; }
+  .category { font-size: 14px; font-weight: 600; color: #5a73c8; margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #2a2d3a; }
+  .item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border-radius: 8px; margin-bottom: 4px; cursor: pointer; transition: background 0.15s; }
+  .item:hover { background: #161923; }
+  .item input[type="checkbox"] { display: none; }
+  .check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #2a2d3a; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; margin-top: 1px; }
+  .item input:checked + .check { background: #5a73c8; border-color: #5a73c8; }
+  .item input:checked + .check::after { content: '✓'; color: #fff; font-size: 14px; font-weight: 700; }
+  .item-content { flex: 1; }
+  .item-title { font-size: 14px; font-weight: 600; color: #e0e0e0; line-height: 1.4; }
+  .item-desc { font-size: 12px; color: #888; margin-top: 2px; line-height: 1.5; }
+  .item-tag { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
+  .tag-high { background: #2a1a1e; color: #e05555; }
+  .tag-mid { background: #2a2a1a; color: #d4b254; }
+  .tag-low { background: #1a2a24; color: #6dbd7e; }
+  .submit-area { margin-top: 32px; padding-top: 20px; border-top: 1px solid #2a2d3a; display: flex; gap: 12px; align-items: center; }
+  .submit-btn { padding: 12px 28px; background: #5a73c8; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #4a63b8; }
+  .select-btns { margin-left: auto; display: flex; gap: 6px; }
+  .select-btns button { padding: 6px 12px; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 6px; color: #888; font-size: 12px; cursor: pointer; }
+  .select-btns button:hover { border-color: #5a73c8; color: #c0c4cc; }
+  .result { margin-top: 16px; padding: 16px; background: #161923; border: 1px solid #2a2d3a; border-radius: 8px; font-family: monospace; font-size: 13px; display: none; white-space: pre-wrap; word-break: break-all; }
+  .copied-toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); background: #5a73c8; color: #fff; padding: 10px 24px; border-radius: 8px; font-size: 14px; display: none; z-index: 100; }
+  .counter { font-size: 13px; color: #888; }
+</style>
+</head>
+<body>
+
+<h1>와이어프레임 리뷰 체크리스트</h1>
+<p class="subtitle">수정할 항목을 선택하고 하단 버튼을 눌러주세요.</p>
+
+<div class="category">안티패턴</div>
+
+<label class="item">
+  <input type="checkbox" value="1">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">1. 중복 검색바</div>
+    <div class="item-desc">메인 Hero + 헤더에 동일 검색바. 스크롤 시 헤더 검색바 노출 패턴으로 변경</div>
+    <span class="item-tag tag-mid">중요도: 중</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="2">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">2. 클릭 영역 충돌</div>
+    <div class="item-desc">덱 카드 전체 클릭 vs 복사 버튼 22px. 모바일 오작동 우려</div>
+    <span class="item-tag tag-mid">중요도: 중</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="3">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">3. 메인 덱 카드 클릭 동작 불일치</div>
+    <div class="item-desc">설계서: 덱 상세 이동 / 와이어프레임: 팀 코드 복사 → 동작 불일치</div>
+    <span class="item-tag tag-high">중요도: 높음</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="4">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">4. 프로필 드롭다운 닫기 처리</div>
+    <div class="item-desc">외부 클릭 시 닫히는 로직 없음</div>
+    <span class="item-tag tag-low">중요도: 낮음</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="5">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">5. max-height 아코디언</div>
+    <div class="item-desc">하드코딩 800/900px로 애니메이션 속도 불균일</div>
+    <span class="item-tag tag-low">중요도: 낮음</span>
+  </div>
+</label>
+
+<div class="category">색상</div>
+
+<label class="item">
+  <input type="checkbox" value="6">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">6. 등수별 색상 구분</div>
+    <div class="item-desc">2~4등 동일 색상 → 2등과 4등 시각적 구분 불가</div>
+    <span class="item-tag tag-mid">중요도: 중</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="7">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">7. stat-good/bad 임계값 불일치</div>
+    <div class="item-desc">초록/빨강 기준이 모호하고 페이지마다 다름</div>
+    <span class="item-tag tag-mid">중요도: 중</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="17">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">17. 매치 태그 글로우 효과</div>
+    <div class="item-desc">와이어프레임에 시각 효과 과다 (기대치 과설정 우려)</div>
+    <span class="item-tag tag-low">중요도: 낮음</span>
+  </div>
+</label>
+
+<div class="category">레이아웃</div>
+
+<label class="item">
+  <input type="checkbox" value="8">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">8. 덱 행 정보 밀도</div>
+    <div class="item-desc">한 줄에 요소 과다, 1024px 이하 overflow 위험</div>
+    <span class="item-tag tag-mid">중요도: 중</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="9">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">9. 헥스 보드 고정 너비</div>
+    <div class="item-desc">434px 고정, 태블릿에서 깨질 수 있음</div>
+    <span class="item-tag tag-low">중요도: 낮음</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="11">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">11. 탭 전환 애니메이션</div>
+    <div class="item-desc">display:none + opacity 동시 사용으로 트랜지션 미작동</div>
+    <span class="item-tag tag-mid">중요도: 중</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="14">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">14. 모바일 반응형 미대응</div>
+    <div class="item-desc">햄버거 메뉴, 반응형 레이아웃 전무</div>
+    <span class="item-tag tag-high">중요도: 높음</span>
+  </div>
+</label>
+
+<div class="category">설계서 누락</div>
+
+<label class="item">
+  <input type="checkbox" value="10">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">10. 티어 필터 누락</div>
+    <div class="item-desc">설계서에 정의된 메인/헤더 티어 필터가 와이어프레임에 없음</div>
+    <span class="item-tag tag-high">중요도: 높음</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="12">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">12. 네비 "전적 검색" 메뉴 누락</div>
+    <div class="item-desc">헤더 메뉴에 "덱"만 있고 "전적 검색" 없음</div>
+    <span class="item-tag tag-high">중요도: 높음</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="13">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">13. 검색바 리전 표시 누락</div>
+    <div class="item-desc">Hero 검색바에 KR 리전 셀렉터 없음</div>
+    <span class="item-tag tag-mid">중요도: 중</span>
+  </div>
+</label>
+
+<div class="category">기타</div>
+
+<label class="item">
+  <input type="checkbox" value="15">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">15. 접근성 (aria-label)</div>
+    <div class="item-desc">아이콘 전용 버튼에 접근성 레이블 없음</div>
+    <span class="item-tag tag-low">중요도: 낮음</span>
+  </div>
+</label>
+
+<label class="item">
+  <input type="checkbox" value="16">
+  <span class="check"></span>
+  <div class="item-content">
+    <div class="item-title">16. 웹폰트</div>
+    <div class="item-desc">Segoe UI → Pretendard 등 크로스플랫폼 한글 폰트 고려</div>
+    <span class="item-tag tag-low">중요도: 낮음</span>
+  </div>
+</label>
+
+<div class="submit-area">
+  <button class="submit-btn" onclick="submitResult()">결과 복사</button>
+  <span class="counter" id="counter">0개 선택</span>
+  <div class="select-btns">
+    <button onclick="selectByTag('high')">높음만</button>
+    <button onclick="selectAll()">전체 선택</button>
+    <button onclick="selectNone()">전체 해제</button>
+  </div>
+</div>
+
+<div class="result" id="result"></div>
+<div class="copied-toast" id="toast">클립보드에 복사되었습니다!</div>
+
+<script>
+const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+checkboxes.forEach(cb => {
+  cb.addEventListener('change', updateCounter);
+});
+
+function updateCounter() {
+  const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+  document.getElementById('counter').textContent = checked + '개 선택';
+}
+
+function selectAll() {
+  checkboxes.forEach(cb => cb.checked = true);
+  updateCounter();
+}
+
+function selectNone() {
+  checkboxes.forEach(cb => cb.checked = false);
+  updateCounter();
+}
+
+function selectByTag(level) {
+  selectNone();
+  const tagClass = 'tag-' + level;
+  document.querySelectorAll('.item').forEach(item => {
+    const tag = item.querySelector('.item-tag');
+    if (tag && tag.classList.contains(tagClass)) {
+      item.querySelector('input').checked = true;
+    }
+  });
+  updateCounter();
+}
+
+function submitResult() {
+  const selected = [];
+  const skipped = [];
+  checkboxes.forEach(cb => {
+    const title = cb.closest('.item').querySelector('.item-title').textContent;
+    if (cb.checked) selected.push('O ' + title);
+    else skipped.push('X ' + title);
+  });
+
+  let text = '';
+  if (selected.length) text += selected.join('\n');
+  if (skipped.length) text += '\n' + skipped.join('\n');
+
+  const resultEl = document.getElementById('result');
+  resultEl.textContent = text;
+  resultEl.style.display = 'block';
+
+  navigator.clipboard.writeText(text).then(() => {
+    const toast = document.getElementById('toast');
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 1500);
+  });
+}
+</script>
+
+</body>
+</html>

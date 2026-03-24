@@ -4,9 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>롤체토스 - 메인 페이지 와이어프레임</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css">
 <style>
+  /*
+    Color convention:
+    - stat-good (#6dbd7e): 순방률 ≥ 55%, 평균 등수 ≤ 3.5, 1등 확률 ≥ 15%
+    - stat-bad (#c47272): 순방률 < 50%, 평균 등수 > 4.0, 1등 확률 < 8%
+    - default: in between
+  */
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', -apple-system, sans-serif; background: #0f1118; color: #c0c4cc; }
+  body { font-family: 'Pretendard', -apple-system, sans-serif; background: #0f1118; color: #c0c4cc; }
 
   /* Header */
   .header-bg { background: #161923; border-bottom: 1px solid #2a2d3a; }
@@ -23,6 +30,15 @@
   .header-search input::placeholder { color: #555; }
   .header-search .search-icon { color: #555; font-size: 22px; flex-shrink: 0; cursor: pointer; background: none; border: none; transform: scaleX(-1); }
   .lang-select { background: #1e2130; border: 1px solid #2a2d3a; color: #c0c4cc; padding: 6px 12px; border-radius: 6px; font-size: 13px; }
+  .profile-wrap { position: relative; }
+  .profile-icon-btn { width: 32px; height: 32px; border-radius: 50%; background: #2a2d3a; border: 1px solid #3a3d4a; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; color: #888; transition: border-color 0.2s; }
+  .profile-icon-btn:hover { border-color: #5a73c8; }
+  .profile-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: #1e2130; border: 1px solid #2a2d3a; border-radius: 8px; min-width: 140px; padding: 6px 0; display: none; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .profile-wrap.open .profile-dropdown { display: block; }
+  .profile-dropdown a { display: block; padding: 8px 16px; font-size: 13px; color: #c0c4cc; text-decoration: none; }
+  .profile-dropdown a:hover { background: #252836; }
+  .profile-dropdown .divider { height: 1px; background: #2a2d3a; margin: 4px 0; }
+  .profile-dropdown .logout { color: #c47272; }
 
   /* Hero */
   .hero { text-align: center; padding: 48px 24px 32px; background: linear-gradient(180deg, #161923 0%, #0f1118 100%); }
@@ -96,6 +112,25 @@
   /* Footer */
   .footer { text-align: center; padding: 32px; color: #444; font-size: 12px; border-top: 1px solid #1e2130; margin-top: 48px; }
 
+  /* Mobile */
+  @media (max-width: 767px) {
+    .header-right .header-search { display: none; }
+    .header-right .lang-select { display: none; }
+    .nav { display: none; }
+    .header { padding: 12px 16px; }
+    .hero h1 { font-size: 22px; }
+    .search-bar { max-width: 100%; }
+    .deck-grid { grid-template-columns: 1fr; }
+    .section { padding: 16px; }
+    .champ-row { grid-template-columns: repeat(4, 1fr); }
+    .support-buttons { flex-direction: column; align-items: center; }
+  }
+  /* Tablet */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .deck-grid { grid-template-columns: repeat(2, 1fr); }
+    .section { padding: 20px; }
+  }
+
 </style>
 </head>
 <body>
@@ -118,6 +153,14 @@
       <option>🇰🇷&ensp;KO</option>
       <option>🇺🇸&ensp;EN</option>
     </select>
+    <div class="profile-wrap">
+      <button class="profile-icon-btn" onclick="this.parentElement.classList.toggle('open')">🐧</button>
+      <div class="profile-dropdown">
+        <a href="#">마이페이지</a>
+        <div class="divider"></div>
+        <a href="#" class="logout">로그아웃</a>
+      </div>
+    </div>
   </div>
 </header>
 </div>
@@ -285,8 +328,8 @@
         <div class="champ"><div class="champ-icon">베이</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">베이가</div></div>
       </div>
       <div class="deck-stats">
-        <span>순방률 <span class="stat-value stat-good">53.2%</span></span>
-        <span>평균 <span class="stat-value stat-good">3.7등</span></span>
+        <span>순방률 <span class="stat-value">53.2%</span></span>
+        <span>평균 <span class="stat-value">3.7등</span></span>
         <span>1등 <span class="stat-value">12.8%</span></span>
       </div>
     </div>
@@ -314,8 +357,8 @@
         <div class="champ"><div class="champ-icon">올라</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">올라프</div></div>
       </div>
       <div class="deck-stats">
-        <span>순방률 <span class="stat-value stat-good">52.8%</span></span>
-        <span>평균 <span class="stat-value stat-good">3.8등</span></span>
+        <span>순방률 <span class="stat-value">52.8%</span></span>
+        <span>평균 <span class="stat-value">3.8등</span></span>
         <span>1등 <span class="stat-value">8.4%</span></span>
       </div>
     </div>
@@ -344,8 +387,8 @@
         <div class="champ"><div class="champ-icon">럭스</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">럭스</div></div>
       </div>
       <div class="deck-stats">
-        <span>순방률 <span class="stat-value stat-good">54.1%</span></span>
-        <span>평균 <span class="stat-value stat-good">3.6등</span></span>
+        <span>순방률 <span class="stat-value">54.1%</span></span>
+        <span>평균 <span class="stat-value">3.6등</span></span>
         <span>1등 <span class="stat-value">13.5%</span></span>
       </div>
     </div>
@@ -374,9 +417,9 @@
         <div class="champ"><div class="champ-icon">쉬바</div><div class="champ-items"><span class="item-dot"></span><span class="item-dot"></span><span class="item-dot"></span></div><div class="champ-label">쉬바나</div></div>
       </div>
       <div class="deck-stats">
-        <span>순방률 <span class="stat-value stat-good">51.9%</span></span>
-        <span>평균 <span class="stat-value stat-good">3.9등</span></span>
-        <span>1등 <span class="stat-value">7.2%</span></span>
+        <span>순방률 <span class="stat-value">51.9%</span></span>
+        <span>평균 <span class="stat-value">3.9등</span></span>
+        <span>1등 <span class="stat-value stat-bad">7.2%</span></span>
       </div>
     </div>
 
@@ -414,6 +457,12 @@ document.querySelectorAll('.deck-card').forEach(card => {
       tip.style.color = '';
       tip.style.opacity = '';
     }, 1500);
+  });
+});
+
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.profile-wrap.open').forEach(wrap => {
+    if (!wrap.contains(e.target)) wrap.classList.remove('open');
   });
 });
 </script>
